@@ -1,4 +1,4 @@
-# NIC_wxApp
+# NIC_wxApp_BackGround
 
 ## 2022/12/1
 
