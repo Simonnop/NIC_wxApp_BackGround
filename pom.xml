@@ -36,19 +36,19 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver</artifactId>
-            <version>3.12.11</version>
+            <version>3.11.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-core -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-core</artifactId>
-            <version>4.8.0</version>
+            <version>3.11.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mongodb/bson -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>bson</artifactId>
-            <version>4.8.0</version>
+            <version>3.11.0</version>
         </dependency>
 
     </dependencies>

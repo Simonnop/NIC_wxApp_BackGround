@@ -12,9 +12,13 @@ public class DataBaseUtil {
     public static MongoDatabase getMongoDB(){
 
 
-        ConnectionString connectionString = new ConnectionString("mongodb://app:abc123456@ac-7w1zgpn-shard-00-00.4wwsi37.mongodb.net:27017,ac-7w1zgpn-shard-00-01.4wwsi37.mongodb.net:27017,ac-7w1zgpn-shard-00-02.4wwsi37.mongodb.net:27017/?ssl=true&replicaSet=atlas-sggh7w-shard-0&authSource=admin&retryWrites=true&w=majority");
-        MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString).build();
+
+        ConnectionString connectionString = new ConnectionString("mongodb+srv://app:abc123456@cluster0.4wwsi37.mongodb.net/?retryWrites=true&w=majority");
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .build();
         MongoClient mongoClient = MongoClients.create(settings);
+
         return mongoClient.getDatabase("NIC");
 
     }
