@@ -18,8 +18,30 @@ import java.util.Objects;
 public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
+
+        String method = req.getParameter("method");
+
+        switch (method) {
+            case "signUp":
+                signUpResponse(req, resp);
+                break;
+            case "signIn":
+                signInResponse(req, resp);
+                break;
+            case "tourist":
+                touristResponse(req, resp);
+                break;
+        }
+    }
+
+    protected void signUpResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+        String data = req.getParameter("data");
+
+        JSONObject dataJson = JSONObject.parseObject(data);
+
+        String username = (String) dataJson.get("username");
+        String password = (String) dataJson.get("password");
 
         LoginService loginService = new LoginServiceImpl();
         User user = loginService.tryLogin(username);
@@ -42,6 +64,14 @@ public class LoginServlet extends HttpServlet {
         out.write(resultStr);
         out.flush();
         System.out.println(resultStr);
+    }
+
+    protected void signInResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+    }
+
+    protected void touristResponse(HttpServletRequest req, HttpServletResponse resp) {
+
     }
 
     @Override
