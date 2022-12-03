@@ -5,7 +5,6 @@ import group.pojo.User;
 import group.service.LoginService;
 import group.service.LoginServiceImpl;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Objects;
 
-@WebServlet("/Login")
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
