@@ -17,65 +17,125 @@ import java.util.Objects;
 @WebServlet("/Login")
 public class LoginServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            String method = req.getParameter("method");
+            switch (method) {
+                case "signUp":
+                    signUpResponse(req, resp);
+                    break;
+                case "signIn":
+                    signInResponse(req, resp);
+                    break;
+                case "tourist":
+                    touristResponse(req, resp);
+                    break;
+            }
+        } catch (Exception e) {
+            Writer out = resp.getWriter();
+            JSONObject result = new JSONObject();
 
-        String method = req.getParameter("method");
+            result.put("code", 103);
+            result.put("msg", "登录信息错误");
 
-        switch (method) {
-            case "signUp":
-                signUpResponse(req, resp);
-                break;
-            case "signIn":
-                signInResponse(req, resp);
-                break;
-            case "tourist":
-                touristResponse(req, resp);
-                break;
+            String resultStr = result.toJSONString();
+            out.write(resultStr);
+            out.flush();
+            System.out.println(resultStr);
         }
     }
 
     protected void signUpResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        String data = req.getParameter("data");
-
-        JSONObject dataJson = JSONObject.parseObject(data);
-
-        String username = (String) dataJson.get("username");
-        String password = (String) dataJson.get("password");
-
-        LoginService loginService = new LoginServiceImpl();
-        User user = loginService.tryLogin(username);
-
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
 
-        if (user == null) {
-            result.put("code", 100);
-            result.put("msg", "查无此用户");
-        } else if (!Objects.equals(user.getPassword(), password)) {
-            result.put("code", 101);
-            result.put("msg", "密码错误");
-        } else {
-            result.put("code", 102);
-            result.put("msg", "登录成功");
-        }
+        try {
+            String data = req.getParameter("data");
+            JSONObject dataJson = JSONObject.parseObject(data);
 
-        String resultStr = result.toJSONString();
-        out.write(resultStr);
-        out.flush();
-        System.out.println(resultStr);
+            String username = (String) dataJson.get("username");
+            String password = (String) dataJson.get("password");
+
+            LoginService loginService = new LoginServiceImpl();
+            User user = loginService.tryLogin(username);
+
+            if (user == null) {
+                result.put("code", 100);
+                result.put("msg", "查无此用户");
+            } else if (!Objects.equals(user.getPassword(), password)) {
+                result.put("code", 101);
+                result.put("msg", "密码错误");
+            } else {
+                result.put("code", 102);
+                result.put("msg", "登录成功");
+            }
+        } catch (Exception e) {
+            result.put("code", 103);
+            result.put("msg", "登录信息错误");
+        } finally {
+
+            String resultStr = result.toJSONString();
+            out.write(resultStr);
+            out.flush();
+            System.out.println(resultStr);
+        }
     }
 
     protected void signInResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+        Writer out = resp.getWriter();
+        JSONObject result = new JSONObject();
+
+        try {
+            String data = req.getParameter("data");
+            JSONObject dataJson = JSONObject.parseObject(data);
+
+            String username = (String) dataJson.get("username");
+
+            LoginService loginService = new LoginServiceImpl();
+            User user = loginService.tryLogin(username);
+
+            if (user == null) {
+                result.put("code", 100);
+                result.put("msg", "查无此用户");
+            } else {
+                result.put("code", 102);
+                result.put("msg", "登录成功");
+            }
+        } catch (Exception e) {
+            result.put("code", 103);
+            result.put("msg", "登录信息错误");
+        } finally {
+            String resultStr = result.toJSONString();
+            out.write(resultStr);
+            out.flush();
+            System.out.println(resultStr);
+        }
+
     }
 
-    protected void touristResponse(HttpServletRequest req, HttpServletResponse resp) {
+    protected void touristResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+        Writer out = resp.getWriter();
+        JSONObject result = new JSONObject();
+
+        try {
+            result.put("code", 102);
+            result.put("msg", "登录成功");
+        } catch (Exception e) {
+            result.put("code", 103);
+            result.put("msg", "登录信息错误");
+        } finally {
+            String resultStr = result.toJSONString();
+            out.write(resultStr);
+            out.flush();
+            System.out.println(resultStr);
+        }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doGet(req, resp);
     }
 }
