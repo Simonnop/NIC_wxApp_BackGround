@@ -9,17 +9,21 @@ import com.mongodb.client.MongoDatabase;
 
 public class DataBaseUtil {
 
-    public static MongoDatabase getMongoDB(){
+    // 饿汉单例,提高加载速度
 
+    private static MongoDatabase mongoDatabase;
 
-
+    static{
         ConnectionString connectionString = new ConnectionString("mongodb+srv://app:abc123456@cluster0.4wwsi37.mongodb.net/?retryWrites=true&w=majority");
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
         MongoClient mongoClient = MongoClients.create(settings);
+        mongoDatabase = mongoClient.getDatabase("NIC");
+    }
 
-        return mongoClient.getDatabase("NIC");
+    public static MongoDatabase getMongoDB(){
 
+        return mongoDatabase;
     }
 }
