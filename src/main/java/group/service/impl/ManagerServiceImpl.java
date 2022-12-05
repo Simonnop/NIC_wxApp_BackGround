@@ -2,6 +2,7 @@ package group.service.impl;
 
 import group.dao.MissionDao;
 import group.dao.impl.MissionDaoImpl;
+import group.pojo.Mission;
 import group.pojo.util.MyTime;
 import group.service.ManagerService;
 
@@ -15,6 +16,8 @@ public class ManagerServiceImpl implements ManagerService {
     public void addMission(MyTime time, String place, String title,
                            String description, Map<String, Integer> reporterNeeds) {
 
-        missionDao.add(time, place, title, description, reporterNeeds);
+        Mission mission = new Mission(time, place, title, description, reporterNeeds);
+
+        missionDao.add(mission);
     }
 }

@@ -18,6 +18,7 @@ public class Mission {
     Map<String, List<User>> reporters;
 
     public Mission() {
+        count++;
     }
 
     public Mission(MyTime time, String place, String title,

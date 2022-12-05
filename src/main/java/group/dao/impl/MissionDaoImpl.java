@@ -1,8 +1,11 @@
 package group.dao.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.MongoCollection;
 import group.dao.MissionDao;
 import group.dao.util.DataBaseUtil;
+import group.pojo.Mission;
 import group.pojo.util.MyTime;
 import org.bson.Document;
 
@@ -20,8 +23,40 @@ public class MissionDaoImpl implements MissionDao {
     MongoCollection<Document> missionCollection = DataBaseUtil.getMongoDB().getCollection("Mission");
 
     @Override
-    public void add(MyTime time, String place, String title,
-                           String description, Map<String, Integer> reporterNeeds) {
+    public void add(Mission mission) {
 
+        Document document = new Document();
+
+        document.put("missionID", mission.getMissionID());
+
+        JSONObject time = new JSONObject();
+        time.put("year", mission.getTime().getYear());
+        time.put("month", mission.getTime().getMonth());
+        time.put("day", mission.getTime().getDay());
+        time.put("hour", mission.getTime().getHour());
+        time.put("minute", mission.getTime().getMinute());
+        document.put("time", time);
+
+        document.put("place", mission.getPlace());
+        document.put("title", mission.getTitle());
+        document.put("description", mission.getDescription());
+        document.put("status", 0);
+
+        JSONObject reporterNeeds = new JSONObject();
+        for (String str : mission.getReporterNeeds().keySet()
+        ) {
+            reporterNeeds.put(str, mission.getReporterNeeds().get(str));
+        }
+        document.put("reporterNeeds", reporterNeeds);
+
+        JSONObject reporters = new JSONObject();
+        for (String str : mission.getReporters().keySet()
+        ) {
+            reporters.put(str, new JSONArray());
+        }
+        document.put("reporters", reporters);
+
+        missionCollection.insertOne(document);
     }
+
 }

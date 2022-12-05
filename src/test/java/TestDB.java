@@ -6,10 +6,11 @@ import group.dao.util.DataBaseUtil;
 import group.pojo.User;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.junit.Test;
 
 public class TestDB {
-
-    public static void main(String[] args) {
+    @Test
+    public void testDB() {
         MongoDatabase mongoDB = DataBaseUtil.getMongoDB();
 
         MongoCollection<Document> userCollection = mongoDB.getCollection("User");
@@ -20,12 +21,10 @@ public class TestDB {
         //指定查询过滤器查询
         FindIterable<Document> findIterable = userCollection.find(filter);
 
-        User user = null;
-
         for (Document document : findIterable) {
             String password = (String) document.get("password");
             String classStr = (String) document.get("classStr");
-            user = new User(username, password, classStr);
+            User user = new User(username, password, classStr);
             System.out.println(user);
         }
     }

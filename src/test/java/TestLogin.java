@@ -2,11 +2,13 @@ import com.alibaba.fastjson.JSONObject;
 import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
+import org.junit.Test;
 
 import java.util.Objects;
 
 public class TestLogin {
-    public static void main(String[] args) {
+    @Test
+    public void testLogin() {
         //testLoginByInput("test", "123456");
         //testLoginByInput("test", "12345");
         //testLoginByInput("tes", "123456");
@@ -25,7 +27,6 @@ public class TestLogin {
         System.out.println(resultStr);
 
         testLoginByInput();
-        testLoginByWrongInput();
         testLoginByInput();
 
     }
@@ -56,27 +57,5 @@ public class TestLogin {
 
         String resultStr = result.toJSONString();
         System.out.println(resultStr);
-    }
-
-
-    private static void testLoginByWrongInput(){
-
-        String method = "Test";
-
-        switch (method) {
-            case "signUp":
-                break;
-            case "signIn":
-                break;
-            case "tourist":
-                break;
-            default:
-                JSONObject result = new JSONObject();
-                result.put("code", 103);
-                result.put("msg", "登录信息错误");
-                String resultStr = result.toJSONString();
-                System.out.println(resultStr);
-                break;
-        }
     }
 }

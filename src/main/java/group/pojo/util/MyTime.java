@@ -1,11 +1,21 @@
 package group.pojo.util;
 
+import java.util.Map;
+
 public class MyTime {
     int year;
     int month;
     int day;
     int hour;
     int minute;
+
+    public MyTime(Map<String,Integer> time) {
+        this.year = time.get("year");
+        this.month = time.get("month");
+        this.day = time.get("day");
+        this.hour = time.get("hour");
+        this.minute = time.get("minute");
+    }
 
     public MyTime(int year, int month, int day, int hour, int minute) {
         this.year = year;
@@ -15,17 +25,26 @@ public class MyTime {
         this.minute = minute;
     }
 
-    public MyTime(){}
+    public MyTime() {
+    }
 
     public String getDate() {
         return "" + year + "/" + month + "/" + day + "";
     }
 
-    public String getDataCode(){
-        return "" + year + "" + month + "" + day + "";
+    public String getDataCode() {
+        String gap1 = "";
+        String gap2 = "";
+        if (month < 10) {
+            gap1 = "0";
+        }
+        if (day < 10) {
+            gap2 = "0";
+        }
+        return "" + year + gap1 + month + gap2 + day;
     }
 
-    public String getTime(){
+    public String getTime() {
         return "" + year + "/" + month + "/" + day + "-" + hour + ":" + minute + "";
     }
 

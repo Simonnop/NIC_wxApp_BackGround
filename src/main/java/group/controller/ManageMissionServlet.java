@@ -22,7 +22,7 @@ import java.util.Objects;
 @WebServlet("/manage")
 public class ManageMissionServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String method = req.getParameter("method");
             switch (method) {
@@ -61,18 +61,21 @@ public class ManageMissionServlet extends HttpServlet {
             String data = req.getParameter("data");
             JSONObject dataJson = JSONObject.parseObject(data);
 
-            // TODO time的格式问题
             String place = dataJson.getString("place");
             String title = dataJson.getString("title");
             String description = dataJson.getString("description");
-            int status = dataJson.getInteger("status");
+
+            Map<String, Integer> time = JSONObject.parseObject(
+                    dataJson.getJSONObject("time").toJSONString(),
+                    new TypeReference<Map<String, Integer>>(){});
+
             Map<String, Integer> reporterNeeds = JSONObject.parseObject(
                     dataJson.getJSONObject("reporterNeeds").toJSONString(),
                     new TypeReference<Map<String, Integer>>(){});
 
             ManagerService managerService = new ManagerServiceImpl();
 
-            managerService.addMission(new MyTime(), place, title, description, reporterNeeds);
+            managerService.addMission(new MyTime(time), place, title, description, reporterNeeds);
 
             result.put("code", 202);
             result.put("msg", "任务添加成功");
@@ -98,7 +101,7 @@ public class ManageMissionServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doGet(req, resp);
     }
 }
