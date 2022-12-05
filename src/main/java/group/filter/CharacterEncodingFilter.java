@@ -10,7 +10,7 @@ public class CharacterEncodingFilter implements Filter {
 
     // 初始化: Web服务器启动时就会初始化
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         System.out.println("CharacterEncodingFilter已经初始化");
     }
 
@@ -24,7 +24,7 @@ public class CharacterEncodingFilter implements Filter {
         servletResponse.setCharacterEncoding("utf-8");
         servletResponse.setContentType("text/javascript;charset=utf-8");
         // 放行!!!
-        filterChain.doFilter(servletRequest,servletResponse);  // 让我们的请求继续走,如果不写就被拦截停止
+        filterChain.doFilter(servletRequest, servletResponse);  // 让我们的请求继续走,如果不写就被拦截停止
     }
 
     // 销毁: Web服务器关闭的时候过滤器会销毁

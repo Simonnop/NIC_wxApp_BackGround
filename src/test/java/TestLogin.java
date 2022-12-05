@@ -32,6 +32,7 @@ public class TestLogin {
 
         testLoginByInput();
         testLoginByWrongInput();
+        testLoginByInput();
 
     }
 

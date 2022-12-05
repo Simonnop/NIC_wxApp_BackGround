@@ -11,7 +11,8 @@ public class DataBaseUtil {
 
     // 饿汉单例,提高加载速度
 
-    private static MongoDatabase mongoDatabase;
+    private static final MongoDatabase mongoDatabase;
+    private DataBaseUtil(){}
 
     static{
         ConnectionString connectionString = new ConnectionString("mongodb+srv://app:abc123456@cluster0.4wwsi37.mongodb.net/?retryWrites=true&w=majority");
