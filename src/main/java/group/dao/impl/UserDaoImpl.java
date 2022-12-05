@@ -1,8 +1,9 @@
-package group.dao;
+package group.dao.impl;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import group.dao.UserDao;
 import group.dao.util.DataBaseUtil;
 import group.pojo.User;
 import org.bson.Document;

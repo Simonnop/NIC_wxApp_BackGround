@@ -3,7 +3,7 @@ package group.controller;
 import com.alibaba.fastjson.JSONObject;
 import group.pojo.User;
 import group.service.UserService;
-import group.service.UserServiceImpl;
+import group.service.impl.UserServiceImpl;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,6 +29,8 @@ public class LoginServlet extends HttpServlet {
                 case "tourist":
                     touristResponse(req, resp);
                     break;
+                default:
+                    throw new Exception();
             }
         } catch (Exception e) {
             Writer out = resp.getWriter();
