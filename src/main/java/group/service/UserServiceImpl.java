@@ -4,7 +4,7 @@ import group.dao.UserDao;
 import group.dao.UserDaoImpl;
 import group.pojo.User;
 
-public class LoginServiceImpl implements LoginService {
+public class UserServiceImpl implements UserService {
 
     UserDao userDao = UserDaoImpl.getUserDao();
 

@@ -1,14 +1,8 @@
 import com.alibaba.fastjson.JSONObject;
 import group.pojo.User;
-import group.service.LoginService;
-import group.service.LoginServiceImpl;
-import org.junit.Test;
+import group.service.UserService;
+import group.service.UserServiceImpl;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Objects;
 
 public class TestLogin {
@@ -45,7 +39,7 @@ public class TestLogin {
         String username = (String) dataJson.get("username");
         String password = (String) dataJson.get("password");
 
-        LoginService loginService = new LoginServiceImpl();
+        UserService loginService = new UserServiceImpl();
         User user = loginService.tryLogin(username);
 
         JSONObject result = new JSONObject();

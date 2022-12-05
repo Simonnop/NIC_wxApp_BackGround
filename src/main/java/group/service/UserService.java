@@ -2,7 +2,7 @@ package group.service;
 
 import group.pojo.User;
 
-public interface LoginService {
+public interface UserService {
 
     User tryLogin(String username);
 }

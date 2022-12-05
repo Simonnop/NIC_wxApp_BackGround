@@ -2,8 +2,8 @@ package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import group.pojo.User;
-import group.service.LoginService;
-import group.service.LoginServiceImpl;
+import group.service.UserService;
+import group.service.UserServiceImpl;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -56,7 +56,7 @@ public class LoginServlet extends HttpServlet {
             String username = (String) dataJson.get("username");
             String password = (String) dataJson.get("password");
 
-            LoginService loginService = new LoginServiceImpl();
+            UserService loginService = new UserServiceImpl();
             User user = loginService.tryLogin(username);
 
             if (user == null) {
@@ -92,7 +92,7 @@ public class LoginServlet extends HttpServlet {
 
             String username = (String) dataJson.get("username");
 
-            LoginService loginService = new LoginServiceImpl();
+            UserService loginService = new UserServiceImpl();
             User user = loginService.tryLogin(username);
 
             if (user == null) {
