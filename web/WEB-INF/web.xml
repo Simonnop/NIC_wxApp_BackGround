@@ -19,9 +19,17 @@
         <servlet-name>loginServlet</servlet-name>
         <servlet-class>group.controller.LoginServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>manageMissionServlet</servlet-name>
+        <servlet-class>group.controller.ManageMissionServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>loginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>manageMissionServlet</servlet-name>
+        <url-pattern>/manage</url-pattern>
     </servlet-mapping>
 
 
