@@ -8,10 +8,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public interface MissionDao {
+
+    // 添加任务
     void add(Mission mission);
 
+    // 显示所有任务
     ArrayList<Document> showAll();
+    // 显示缺人的任务
+    ArrayList<Document> showNeed();
 
-    void showNeed();
+
 
 }

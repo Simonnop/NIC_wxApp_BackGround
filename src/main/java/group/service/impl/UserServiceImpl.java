@@ -28,6 +28,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ArrayList<Document> showNeedMission() {
+
+        return missionDao.showNeed();
+    }
+
+    @Override
     public void getMission(String username, String missionID, String kind) {
 
     }

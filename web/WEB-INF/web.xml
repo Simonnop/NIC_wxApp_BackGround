@@ -24,8 +24,8 @@
         <servlet-class>group.controller.ManageMissionServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>takeMissionServlet</servlet-name>
-        <servlet-class>group.controller.TakeMissionServlet</servlet-class>
+        <servlet-name>showMissionServlet</servlet-name>
+        <servlet-class>group.controller.ShowMissionServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>loginServlet</servlet-name>
@@ -36,8 +36,8 @@
         <url-pattern>/manage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>takeMissionServlet</servlet-name>
-        <url-pattern>/take</url-pattern>
+        <servlet-name>showMissionServlet</servlet-name>
+        <url-pattern>/show</url-pattern>
     </servlet-mapping>
 
 

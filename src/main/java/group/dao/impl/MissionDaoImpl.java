@@ -7,12 +7,9 @@ import com.mongodb.client.MongoCollection;
 import group.dao.MissionDao;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
-import group.pojo.User;
-import group.pojo.util.MyTime;
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class MissionDaoImpl implements MissionDao {
     private static final MissionDaoImpl missionDaoImpl = new MissionDaoImpl();
@@ -36,8 +33,10 @@ public class MissionDaoImpl implements MissionDao {
         time.put("year", mission.getTime().getYear());
         time.put("month", mission.getTime().getMonth());
         time.put("day", mission.getTime().getDay());
-        time.put("hour", mission.getTime().getHour());
-        time.put("minute", mission.getTime().getMinute());
+        time.put("beginHour", mission.getTime().getBeginHour());
+        time.put("beginMinute", mission.getTime().getBeginMinute());
+        time.put("endHour", mission.getTime().getEndHour());
+        time.put("endMinute", mission.getTime().getEndMinute());
         document.put("time", time);
 
         document.put("place", mission.getPlace());
@@ -89,8 +88,38 @@ public class MissionDaoImpl implements MissionDao {
     }
 
     @Override
-    public void showNeed() {
+    public ArrayList<Document> showNeed() {
 
+        ArrayList<Document> missionArray = new ArrayList<>();
+
+        FindIterable<Document> findIterable = missionCollection.find();
+
+        for (Document document : findIterable) {
+            document.remove("_id");
+            // 计算还缺少的人数
+            Document reporterNeeds = (Document) document.get("reporterNeeds");
+            Document reporters = (Document) document.get("reporters");
+            JSONObject reporterLack = new JSONObject();
+
+            int totalNeedCount = 0;
+            for (String str:reporterNeeds.keySet()
+            ) {
+                int needCount = (Integer) reporterNeeds.get(str) - reporters.getList(str,String.class).size();
+                totalNeedCount += needCount;
+                if (needCount != 0) {
+                    reporterLack.put(str, needCount);
+                }
+            }
+            document.put("reporterLack", reporterLack);
+
+            // 如果不需要人了,跳过本次循环
+            if (totalNeedCount == 0) {
+                continue;
+            }
+            missionArray.add(document);
+        }
+
+        return missionArray;
     }
 
 }

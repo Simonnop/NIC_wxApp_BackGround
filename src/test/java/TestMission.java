@@ -25,7 +25,7 @@ public class TestMission {
 
         Mission mission1 = new Mission();
         Mission mission = new Mission(
-                new MyTime(2022, 12, 4, 19, 0),
+                new MyTime(2022, 12, 4, 19, 0,20,0),
                 "东九D216","12月例会","吃蛋糕",new HashMap<String,Integer>(){{put("photo",1);}}
         );
 
@@ -37,8 +37,10 @@ public class TestMission {
         time.put("year", mission.getTime().getYear());
         time.put("month", mission.getTime().getMonth());
         time.put("day", mission.getTime().getDay());
-        time.put("hour", mission.getTime().getHour());
-        time.put("minute", mission.getTime().getMinute());
+        time.put("beginHour", mission.getTime().getBeginHour());
+        time.put("beginMinute", mission.getTime().getBeginMinute());
+        time.put("endHour", mission.getTime().getEndHour());
+        time.put("endMinute", mission.getTime().getEndMinute());
         document.put("time", time);
 
         document.put("place", mission.getPlace());
@@ -71,7 +73,7 @@ public class TestMission {
         String data = "{\"place\": \"111\"," +
                 "\"title\": \"222\"," +
                 "\"description\": \"333\"," +
-                "\"time\": {\"year\": 1234,\"month\": 12,\"day\": 12,\"hour\": 12,\"minute\": 0}," +
+                "\"time\": {\"year\": 1234,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
                 "\"reporterNeeds\": {\"photo\": 1,\"article\": 1}}";
 
         try {
@@ -142,12 +144,34 @@ public class TestMission {
         JSONObject result = new JSONObject();
 
         try {
-            // TODO 后面再加筛选的条件
-
             UserServiceImpl userService = new UserServiceImpl();
 
             JSONArray jsonArray = new JSONArray();
             jsonArray.addAll(userService.showAllMission());
+            result.put("data", jsonArray);
+
+            result.put("code", 302);
+            result.put("msg", "请求显示任务成功");
+
+        } catch (Exception e) {
+            result.put("code", 303);
+            result.put("msg", "请求显示任务信息错误");
+        } finally {
+
+            String resultStr = result.toJSONString();
+            System.out.println(resultStr);
+        }
+    }
+
+    @Test
+    public void testShowNeed(){
+        JSONObject result = new JSONObject();
+
+        try {
+            UserServiceImpl userService = new UserServiceImpl();
+
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.addAll(userService.showNeedMission());
             result.put("data", jsonArray);
 
             result.put("code", 302);

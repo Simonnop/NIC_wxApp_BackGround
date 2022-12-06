@@ -6,23 +6,30 @@ public class MyTime {
     int year;
     int month;
     int day;
-    int hour;
-    int minute;
+    int beginHour;
+    int beginMinute;
+    int endHour;
+    int endMinute;
 
     public MyTime(Map<String,Integer> time) {
         this.year = time.get("year");
         this.month = time.get("month");
         this.day = time.get("day");
-        this.hour = time.get("hour");
-        this.minute = time.get("minute");
+        this.beginHour = time.get("beginHour");
+        this.beginMinute = time.get("beginMinute");
+        this.endHour = time.get("endHour");
+        this.endMinute = time.get("endMinute");
     }
 
-    public MyTime(int year, int month, int day, int hour, int minute) {
+    public MyTime(int year, int month, int day, int beginHour,
+                  int beginMinute, int endHour, int endMinute) {
         this.year = year;
         this.month = month;
         this.day = day;
-        this.hour = hour;
-        this.minute = minute;
+        this.beginHour = beginHour;
+        this.beginMinute = beginMinute;
+        this.endHour = endHour;
+        this.endMinute = endMinute;
     }
 
     public MyTime() {
@@ -45,7 +52,7 @@ public class MyTime {
     }
 
     public String getTime() {
-        return "" + year + "/" + month + "/" + day + "-" + hour + ":" + minute + "";
+        return "" + year + "/" + month + "/" + day + "-" + beginHour + ":" + beginMinute + "";
     }
 
     public int getYear() {
@@ -72,19 +79,35 @@ public class MyTime {
         this.day = day;
     }
 
-    public int getHour() {
-        return hour;
+    public int getBeginHour() {
+        return beginHour;
     }
 
-    public void setHour(int hour) {
-        this.hour = hour;
+    public void setBeginHour(int beginHour) {
+        this.beginHour = beginHour;
     }
 
-    public int getMinute() {
-        return minute;
+    public int getBeginMinute() {
+        return beginMinute;
     }
 
-    public void setMinute(int minute) {
-        this.minute = minute;
+    public void setBeginMinute(int beginMinute) {
+        this.beginMinute = beginMinute;
+    }
+
+    public int getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(int endHour) {
+        this.endHour = endHour;
+    }
+
+    public int getEndMinute() {
+        return endMinute;
+    }
+
+    public void setEndMinute(int endMinute) {
+        this.endMinute = endMinute;
     }
 }
