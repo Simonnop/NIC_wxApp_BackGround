@@ -17,6 +17,7 @@ public interface MissionDao {
     // 显示缺人的任务
     ArrayList<Document> showNeed();
 
-
+    // 接任务
+    void get(String username, String missionID, String kind);
 
 }

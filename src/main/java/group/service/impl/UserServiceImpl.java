@@ -36,5 +36,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void getMission(String username, String missionID, String kind) {
 
+        missionDao.get(username, missionID, kind);
     }
 }

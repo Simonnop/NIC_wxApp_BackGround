@@ -4,17 +4,21 @@ import com.alibaba.fastjson.TypeReference;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
 import group.pojo.util.MyTime;
 import group.service.ManagerService;
+import group.service.UserService;
 import group.service.impl.ManagerServiceImpl;
 import group.service.impl.UserServiceImpl;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Test;
 
+import java.io.Writer;
 import java.util.*;
+import java.util.logging.Filter;
 
 public class TestMission {
     @Test
@@ -182,6 +186,34 @@ public class TestMission {
             result.put("msg", "请求显示任务信息错误");
         } finally {
 
+            String resultStr = result.toJSONString();
+            System.out.println(resultStr);
+        }
+    }
+
+    @Test
+    public void testGetMission(){
+
+        String data = "{\"username\":\"test3\",\"missionID\":\"1234121201\",\"kind\":\"photo\"}";
+        JSONObject result = new JSONObject();
+
+        try {
+            JSONObject dataJson = JSONObject.parseObject(data);
+
+            String username = (String) dataJson.get("username");
+            String missionID = (String) dataJson.get("missionID");
+            String kind = (String) dataJson.get("kind");
+
+            UserService loginService = new UserServiceImpl();
+            loginService.getMission(username,missionID,kind);
+
+            result.put("code", 402);
+            result.put("msg", "任务参加成功");
+
+        } catch (Exception e) {
+            result.put("code", 403);
+            result.put("msg", "请求信息错误");
+        } finally {
             String resultStr = result.toJSONString();
             System.out.println(resultStr);
         }

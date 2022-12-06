@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import group.dao.MissionDao;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 
@@ -122,4 +125,20 @@ public class MissionDaoImpl implements MissionDao {
         return missionArray;
     }
 
+    @Override
+    public void get(String username, String missionID, String kind) {
+
+        Bson filter = Filters.eq("missionID", missionID);
+        Document mission = missionCollection.find(filter).first();
+
+        Document reporterNeeds = (Document) mission.get("reporterNeeds");
+        Document reporters = (Document) mission.get("reporters");
+        if ((Integer) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
+            throw new RuntimeException();
+        }
+
+        Bson update = Updates.addToSet("reporters." + kind, username);
+
+        missionCollection.updateOne(filter, update);
+    }
 }
