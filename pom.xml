@@ -51,6 +51,12 @@
             <version>3.11.0</version>
         </dependency>
 
+        <!-- 取消字符串转义 -->
+        <!--<dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>-->
 
     </dependencies>
 

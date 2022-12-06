@@ -39,6 +39,7 @@ public class TestLogin {
 
         String username = (String) dataJson.get("username");
         String password = (String) dataJson.get("password");
+        String a = dataJson.getString("a");
 
         UserService loginService = new UserServiceImpl();
         User user = loginService.tryLogin(username);
@@ -57,5 +58,6 @@ public class TestLogin {
 
         String resultStr = result.toJSONString();
         System.out.println(resultStr);
+        System.out.println("a is " + a);
     }
 }

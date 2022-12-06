@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="NIC_wxApp:war">
+    <output-path>$PROJECT_DIR$/out/artifacts/NIC_wxApp_war</output-path>
+    <root id="archive" name="NIC_wxApp_war.war">
+      <element id="artifact" artifact-name="NIC_wxApp:war exploded" />
+    </root>
+  </artifact>
+</component>

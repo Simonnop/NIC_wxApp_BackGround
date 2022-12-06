@@ -6,6 +6,9 @@ import group.dao.impl.MissionDaoImpl;
 import group.dao.impl.UserDaoImpl;
 import group.pojo.User;
 import group.service.UserService;
+import org.bson.Document;
+
+import java.util.ArrayList;
 
 public class UserServiceImpl implements UserService {
 
@@ -16,6 +19,12 @@ public class UserServiceImpl implements UserService {
     public User tryLogin(String username) {
 
         return userDao.findUser(username);
+    }
+
+    @Override
+    public ArrayList<Document> showAllMission() {
+
+        return missionDao.showAll();
     }
 
     @Override
