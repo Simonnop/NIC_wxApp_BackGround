@@ -1,6 +1,7 @@
 package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import group.controller.exception.InfoException;
 import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
@@ -30,7 +31,7 @@ public class LoginServlet extends HttpServlet {
                     touristResponse(req, resp);
                     break;
                 default:
-                    throw new Exception();
+                    throw new InfoException();
             }
         } catch (Exception e) {
             Writer out = resp.getWriter();
@@ -57,6 +58,9 @@ public class LoginServlet extends HttpServlet {
 
             String username = (String) dataJson.get("username");
             String password = (String) dataJson.get("password");
+            if (username == null && password == null) {
+                throw new InfoException();
+            }
 
             UserService loginService = new UserServiceImpl();
             User user = loginService.tryLogin(username);

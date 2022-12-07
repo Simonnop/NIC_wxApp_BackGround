@@ -15,6 +15,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+
     <servlet>
         <servlet-name>loginServlet</servlet-name>
         <servlet-class>group.controller.LoginServlet</servlet-class>
@@ -27,6 +28,12 @@
         <servlet-name>showMissionServlet</servlet-name>
         <servlet-class>group.controller.ShowMissionServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>takeMissionServlet</servlet-name>
+        <servlet-class>group.controller.TakeMissionServlet</servlet-class>
+    </servlet>
+
+
     <servlet-mapping>
         <servlet-name>loginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -38,6 +45,10 @@
     <servlet-mapping>
         <servlet-name>showMissionServlet</servlet-name>
         <url-pattern>/show</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>takeMissionServlet</servlet-name>
+        <url-pattern>/take</url-pattern>
     </servlet-mapping>
 
 

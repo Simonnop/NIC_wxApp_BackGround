@@ -1,17 +1,22 @@
 package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import group.controller.exception.ConflictException;
+import group.controller.exception.InfoException;
+import group.controller.exception.NotFoundException;
 import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 
+@WebServlet("/take")
 public class TakeMissionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -54,7 +59,7 @@ public class TakeMissionServlet extends HttpServlet {
             String missionID = (String) dataJson.get("missionID");
             String kind = (String) dataJson.get("kind");
             if (username == null || missionID == null || kind == null) {
-                throw new Exception();
+                throw new InfoException();
             }
             UserService loginService = new UserServiceImpl();
             loginService.getMission(username, missionID, kind);
@@ -62,10 +67,13 @@ public class TakeMissionServlet extends HttpServlet {
             result.put("code", 402);
             result.put("msg", "任务参加成功");
 
-        } catch (RuntimeException e) {
+        } catch (ConflictException e) {
             result.put("code", 401);
             result.put("msg", "需要人数已满");
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
+            result.put("code", 400);
+            result.put("msg", "数据库无此字段");
+        }catch (Exception e) {
             result.put("code", 403);
             result.put("msg", "请求信息错误");
         } finally {

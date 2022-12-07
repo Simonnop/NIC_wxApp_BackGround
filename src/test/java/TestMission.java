@@ -5,6 +5,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import group.controller.exception.ConflictException;
+import group.controller.exception.InfoException;
+import group.controller.exception.NotFoundException;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
 import group.pojo.util.MyTime;
@@ -218,7 +221,7 @@ public class TestMission {
             String missionID = (String) dataJson.get("missionID");
             String kind = (String) dataJson.get("kind");
             if (username == null || missionID == null || kind == null) {
-                throw new Exception();
+                throw new InfoException();
             }
             UserService loginService = new UserServiceImpl();
             loginService.getMission(username, missionID, kind);
@@ -226,10 +229,13 @@ public class TestMission {
             result.put("code", 402);
             result.put("msg", "任务参加成功");
 
-        } catch (RuntimeException e) {
+        } catch (ConflictException e) {
             result.put("code", 401);
             result.put("msg", "需要人数已满");
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
+            result.put("code", 400);
+            result.put("msg", "数据库无此字段");
+        }catch (Exception e) {
             result.put("code", 403);
             result.put("msg", "请求信息错误");
         } finally {
