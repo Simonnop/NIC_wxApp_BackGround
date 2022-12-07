@@ -53,13 +53,18 @@ public class TakeMissionServlet extends HttpServlet {
             String username = (String) dataJson.get("username");
             String missionID = (String) dataJson.get("missionID");
             String kind = (String) dataJson.get("kind");
-
+            if (username == null || missionID == null || kind == null) {
+                throw new Exception();
+            }
             UserService loginService = new UserServiceImpl();
-            loginService.getMission(username,missionID,kind);
+            loginService.getMission(username, missionID, kind);
 
             result.put("code", 402);
             result.put("msg", "任务参加成功");
 
+        } catch (RuntimeException e) {
+            result.put("code", 401);
+            result.put("msg", "需要人数已满");
         } catch (Exception e) {
             result.put("code", 403);
             result.put("msg", "请求信息错误");

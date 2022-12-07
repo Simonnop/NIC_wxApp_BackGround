@@ -29,8 +29,10 @@ public class TestMission {
 
         Mission mission1 = new Mission();
         Mission mission = new Mission(
-                new MyTime(2022, 12, 4, 19, 0,20,0),
-                "东九D216","12月例会","吃蛋糕",new HashMap<String,Integer>(){{put("photo",1);}}
+                new MyTime(2022, 12, 4, 19, 0, 20, 0),
+                "东九D216", "12月例会", "吃蛋糕", new HashMap<String, Integer>() {{
+            put("photo", 1);
+        }}
         );
 
         Document document = new Document();
@@ -72,7 +74,7 @@ public class TestMission {
     }
 
     @Test
-    public void testReceiveMission(){
+    public void testReceiveMission() {
         JSONObject result = new JSONObject();
         String data = "{\"place\": \"111\"," +
                 "\"title\": \"222\"," +
@@ -90,11 +92,13 @@ public class TestMission {
 
             Map<String, Integer> time = JSONObject.parseObject(
                     dataJson.getJSONObject("time").toJSONString(),
-                    new TypeReference<Map<String, Integer>>(){});
+                    new TypeReference<Map<String, Integer>>() {
+                    });
 
             Map<String, Integer> reporterNeeds = JSONObject.parseObject(
                     dataJson.getJSONObject("reporterNeeds").toJSONString(),
-                    new TypeReference<Map<String, Integer>>(){});
+                    new TypeReference<Map<String, Integer>>() {
+                    });
 
             ManagerService managerService = new ManagerServiceImpl();
 
@@ -114,14 +118,14 @@ public class TestMission {
     }
 
     @Test
-    public void testQuery(){
+    public void testQuery() {
 
         MongoCollection<Document> missionCollection = DataBaseUtil.getMongoDB().getCollection("Mission");
 
 
-        Bson filter = Filters.eq("time.month", new Date().getMonth()+1);
+        Bson filter = Filters.eq("time.month", new Date().getMonth() + 1);
 
-        System.out.println(new Date().getMonth()+1);
+        System.out.println(new Date().getMonth() + 1);
 
         FindIterable<Document> findIterable = missionCollection.find(filter);
 
@@ -132,9 +136,9 @@ public class TestMission {
             Document reporters = (Document) document.get("reporters");
             JSONObject reporterLack = new JSONObject();
 
-            for (String str:reporterNeeds.keySet()
-                 ) {
-                reporterLack.put(str, (Integer) reporterNeeds.get(str) - reporters.getList(str,String.class).size());
+            for (String str : reporterNeeds.keySet()
+            ) {
+                reporterLack.put(str, (Integer) reporterNeeds.get(str) - reporters.getList(str, String.class).size());
             }
             document.put("reporterLack", reporterLack);
 
@@ -144,7 +148,7 @@ public class TestMission {
     }
 
     @Test
-    public void testShowAll(){
+    public void testShowAll() {
         JSONObject result = new JSONObject();
 
         try {
@@ -168,7 +172,7 @@ public class TestMission {
     }
 
     @Test
-    public void testShowNeed(){
+    public void testShowNeed() {
         JSONObject result = new JSONObject();
 
         try {
@@ -192,9 +196,19 @@ public class TestMission {
     }
 
     @Test
-    public void testGetMission(){
+    public void doubleGet(){
 
-        String data = "{\"username\":\"test3\",\"missionID\":\"1234121201\",\"kind\":\"photo\"}";
+        testGetMission();
+        System.out.println("new request");
+        testGetMission();
+    }
+
+    @Test
+    public void testGetMission() {
+
+        System.out.println(new Date());
+
+        String data = "{\"username\":\"test1\",\"missionID\":\"1234121201\",\"kind\":\"photo\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -203,13 +217,18 @@ public class TestMission {
             String username = (String) dataJson.get("username");
             String missionID = (String) dataJson.get("missionID");
             String kind = (String) dataJson.get("kind");
-
+            if (username == null || missionID == null || kind == null) {
+                throw new Exception();
+            }
             UserService loginService = new UserServiceImpl();
-            loginService.getMission(username,missionID,kind);
+            loginService.getMission(username, missionID, kind);
 
             result.put("code", 402);
             result.put("msg", "任务参加成功");
 
+        } catch (RuntimeException e) {
+            result.put("code", 401);
+            result.put("msg", "需要人数已满");
         } catch (Exception e) {
             result.put("code", 403);
             result.put("msg", "请求信息错误");

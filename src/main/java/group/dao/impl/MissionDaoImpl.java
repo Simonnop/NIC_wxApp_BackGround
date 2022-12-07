@@ -128,17 +128,19 @@ public class MissionDaoImpl implements MissionDao {
     @Override
     public void get(String username, String missionID, String kind) {
 
-        Bson filter = Filters.eq("missionID", missionID);
-        Document mission = missionCollection.find(filter).first();
+        synchronized (this) {
+            Bson filter = Filters.eq("missionID", missionID);
+            Document mission = missionCollection.find(filter).first();
 
-        Document reporterNeeds = (Document) mission.get("reporterNeeds");
-        Document reporters = (Document) mission.get("reporters");
-        if ((Integer) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
-            throw new RuntimeException();
+            Document reporterNeeds = (Document) mission.get("reporterNeeds");
+            Document reporters = (Document) mission.get("reporters");
+            if ((Integer) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
+                throw new RuntimeException();
+            }
+
+            Bson update = Updates.addToSet("reporters." + kind, username);
+
+            missionCollection.updateOne(filter, update);
         }
-
-        Bson update = Updates.addToSet("reporters." + kind, username);
-
-        missionCollection.updateOne(filter, update);
     }
 }
