@@ -1,7 +1,8 @@
 package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import group.controller.exception.InfoException;
+import group.controller.exception.AppRuntimeException;
+import group.controller.exception.ExceptionKind;
 import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
@@ -31,14 +32,19 @@ public class LoginServlet extends HttpServlet {
                     touristResponse(req, resp);
                     break;
                 default:
-                    throw new InfoException();
+                    throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
         } catch (Exception e) {
             Writer out = resp.getWriter();
             JSONObject result = new JSONObject();
 
-            result.put("code", 103);
-            result.put("msg", "登录信息错误");
+            if (e instanceof AppRuntimeException) {
+                result.put("code", ((AppRuntimeException) e).getCode());
+                result.put("msg", ((AppRuntimeException) e).getMsg());
+            } else {
+                result.put("code", 98);
+                result.put("msg", "后端LoginServlet处理错误");
+            }
 
             String resultStr = result.toJSONString();
             out.write(resultStr);
@@ -52,39 +58,33 @@ public class LoginServlet extends HttpServlet {
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
 
-        try {
-            String data = req.getParameter("data");
-            JSONObject dataJson = JSONObject.parseObject(data);
+        String data = req.getParameter("data");
+        JSONObject dataJson = JSONObject.parseObject(data);
 
-            String username = (String) dataJson.get("username");
-            String password = (String) dataJson.get("password");
-            if (username == null && password == null) {
-                throw new InfoException();
-            }
-
-            UserService loginService = new UserServiceImpl();
-            User user = loginService.tryLogin(username);
-
-            if (user == null) {
-                result.put("code", 100);
-                result.put("msg", "查无此用户");
-            } else if (!Objects.equals(user.getPassword(), password)) {
-                result.put("code", 101);
-                result.put("msg", "密码错误");
-            } else {
-                result.put("code", 102);
-                result.put("msg", "登录成功");
-            }
-        } catch (Exception e) {
-            result.put("code", 103);
-            result.put("msg", "登录信息错误");
-        } finally {
-
-            String resultStr = result.toJSONString();
-            out.write(resultStr);
-            out.flush();
-            System.out.println(resultStr);
+        String username = (String) dataJson.get("username");
+        String password = (String) dataJson.get("password");
+        if (username == null && password == null) {
+            throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
+
+        UserService loginService = new UserServiceImpl();
+        User user = loginService.tryLogin(username);
+
+        if (user == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        } else if (!Objects.equals(user.getPassword(), password)) {
+            result.put("code", 101);
+            result.put("msg", "密码错误");
+        } else {
+            result.put("code", 102);
+            result.put("msg", "登录成功");
+        }
+
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
+
     }
 
     protected void signInResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -92,32 +92,25 @@ public class LoginServlet extends HttpServlet {
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
 
-        try {
-            String data = req.getParameter("data");
-            JSONObject dataJson = JSONObject.parseObject(data);
+        String data = req.getParameter("data");
+        JSONObject dataJson = JSONObject.parseObject(data);
 
-            String username = (String) dataJson.get("username");
+        String username = (String) dataJson.get("username");
 
-            UserService loginService = new UserServiceImpl();
-            User user = loginService.tryLogin(username);
+        UserService loginService = new UserServiceImpl();
+        User user = loginService.tryLogin(username);
 
-            if (user == null) {
-                result.put("code", 100);
-                result.put("msg", "查无此用户");
-            } else {
-                result.put("code", 102);
-                result.put("msg", "登录成功");
-            }
-        } catch (Exception e) {
-            result.put("code", 103);
-            result.put("msg", "登录信息错误");
-        } finally {
-            String resultStr = result.toJSONString();
-            out.write(resultStr);
-            out.flush();
-            System.out.println(resultStr);
+        if (user == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        } else {
+            result.put("code", 102);
+            result.put("msg", "登录成功");
         }
 
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
     }
 
     protected void touristResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -125,18 +118,14 @@ public class LoginServlet extends HttpServlet {
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
 
-        try {
-            result.put("code", 102);
-            result.put("msg", "登录成功");
-        } catch (Exception e) {
-            result.put("code", 103);
-            result.put("msg", "登录信息错误");
-        } finally {
-            String resultStr = result.toJSONString();
-            out.write(resultStr);
-            out.flush();
-            System.out.println(resultStr);
-        }
+        result.put("code", 102);
+        result.put("msg", "登录成功");
+
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
+
     }
 
     @Override

@@ -41,6 +41,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void likeMission(String missionID) {
-        // TODO 标记感兴趣的任务, 存储在用户画像中
+
+        /*
+        * TODO 标记感兴趣的任务, 存储在用户画像中
+        * */
     }
 }

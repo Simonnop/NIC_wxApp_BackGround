@@ -24,8 +24,11 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public void recommendMission(String missionID, String method) {
-        // TODO 根据 tags 和 用户画像 的 拟合程度 推送
-        // 采用 socket 与 python 通信
-        // method: 选拟合最好或最差
+        /*
+        * TODO 根据 tags 和 用户画像 的 拟合程度 推送
+        *  采用 socket 与 python 通信
+        * method: 选拟合最好或最差
+        * */
+
     }
 }

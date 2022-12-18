@@ -1,16 +1,13 @@
 package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import group.controller.util.JsonUtil;
-import group.pojo.User;
+import group.controller.exception.AppRuntimeException;
+import group.controller.exception.ExceptionKind;
+import group.controller.util.JsonSwitcher;
 import group.pojo.util.MyTime;
 import group.service.ManagerService;
-import group.service.UserService;
 import group.service.impl.ManagerServiceImpl;
-import group.service.impl.UserServiceImpl;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
-import java.util.Objects;
 
 @WebServlet("/manage")
 public class ManageMissionServlet extends HttpServlet {
@@ -37,14 +33,19 @@ public class ManageMissionServlet extends HttpServlet {
                     deleteMissionResponse(req, resp);
                     break;
                 default:
-                    throw new Exception();
+                    throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
         } catch (Exception e) {
             Writer out = resp.getWriter();
             JSONObject result = new JSONObject();
 
-            result.put("code", 203);
-            result.put("msg", "任务信息错误");
+            if (e instanceof AppRuntimeException) {
+                result.put("code", ((AppRuntimeException) e).getCode());
+                result.put("msg", ((AppRuntimeException) e).getMsg());
+            } else {
+                result.put("code", 98);
+                result.put("msg", "后端ManageMissionServlet处理错误");
+            }
 
             String resultStr = result.toJSONString();
             out.write(resultStr);
@@ -58,39 +59,37 @@ public class ManageMissionServlet extends HttpServlet {
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
 
-        try {
-            String data = req.getParameter("data");
-            JSONObject dataJson = JSONObject.parseObject(data);
+        String data = req.getParameter("data");
+        JSONObject dataJson = JSONObject.parseObject(data);
 
-            String place = dataJson.getString("place");
-            String title = dataJson.getString("title");
-            String description = dataJson.getString("description");
-            Map<String, Integer> time = JsonUtil.readStringIntegerJson(dataJson, "time");
-            Map<String, Integer> reporterNeeds = JsonUtil.readStringIntegerJson(dataJson, "reporterNeeds");
+        String place = dataJson.getString("place");
+        String title = dataJson.getString("title");
+        String description = dataJson.getString("description");
+        Map<String, Integer> time = JsonSwitcher.readStringIntegerJson(dataJson, "time");
+        Map<String, Integer> reporterNeeds = JsonSwitcher.readStringIntegerJson(dataJson, "reporterNeeds");
 
-            ManagerService managerService = new ManagerServiceImpl();
-            managerService.addMission(new MyTime(time), place, title, description, reporterNeeds);
+        /*
+        * TODO 改用 parseObject 读取对象
+        * */
 
-            result.put("code", 202);
-            result.put("msg", "任务添加成功");
+        ManagerService managerService = new ManagerServiceImpl();
+        managerService.addMission(new MyTime(time), place, title, description, reporterNeeds);
 
-        } catch (Exception e) {
-            result.put("code", 203);
-            result.put("msg", "任务信息错误");
-        } finally {
+        result.put("code", 202);
+        result.put("msg", "任务添加成功");
 
-            String resultStr = result.toJSONString();
-            out.write(resultStr);
-            out.flush();
-            System.out.println(resultStr);
-        }
-    }
-
-    protected void alterMissionResponse(HttpServletRequest req, HttpServletResponse resp){
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
 
     }
 
-    protected void deleteMissionResponse(HttpServletRequest req, HttpServletResponse resp){
+    protected void alterMissionResponse(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+
+    protected void deleteMissionResponse(HttpServletRequest req, HttpServletResponse resp) {
 
     }
 

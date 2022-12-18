@@ -6,8 +6,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import group.controller.exception.ConflictException;
-import group.controller.exception.NotFoundException;
+import group.controller.exception.AppRuntimeException;
+import group.controller.exception.ExceptionKind;
 import group.dao.MissionDao;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
@@ -136,13 +136,13 @@ public class MissionDaoImpl implements MissionDao {
             Bson filter = Filters.eq("missionID", missionID);
             Document mission = missionCollection.find(filter).first();
             if (mission == null) {
-                throw new NotFoundException();
+                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
             }
 
             Document reporterNeeds = (Document) mission.get("reporterNeeds");
             Document reporters = (Document) mission.get("reporters");
             if ((Integer) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
-                throw new ConflictException();
+                throw new AppRuntimeException(ExceptionKind.ENOUGH_PEOPLE);
             }
 
             Bson update = Updates.addToSet("reporters." + kind, username);

@@ -1,9 +1,7 @@
 package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import group.controller.exception.ConflictException;
-import group.controller.exception.InfoException;
-import group.controller.exception.NotFoundException;
+import group.controller.exception.*;
 import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
@@ -51,37 +49,27 @@ public class TakeMissionServlet extends HttpServlet {
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
 
-        try {
-            String data = req.getParameter("data");
-            JSONObject dataJson = JSONObject.parseObject(data);
+        String data = req.getParameter("data");
+        JSONObject dataJson = JSONObject.parseObject(data);
 
-            String username = (String) dataJson.get("username");
-            String missionID = (String) dataJson.get("missionID");
-            String kind = (String) dataJson.get("kind");
-            if (username == null || missionID == null || kind == null) {
-                throw new InfoException();
-            }
-            UserService loginService = new UserServiceImpl();
-            loginService.getMission(username, missionID, kind);
-
-            result.put("code", 402);
-            result.put("msg", "任务参加成功");
-
-        } catch (ConflictException e) {
-            result.put("code", 401);
-            result.put("msg", "需要人数已满");
-        } catch (NotFoundException e) {
-            result.put("code", 400);
-            result.put("msg", "数据库无此字段");
-        }catch (Exception e) {
-            result.put("code", 403);
-            result.put("msg", "请求信息错误");
-        } finally {
-            String resultStr = result.toJSONString();
-            out.write(resultStr);
-            out.flush();
-            System.out.println(resultStr);
+        String username = (String) dataJson.get("username");
+        String missionID = (String) dataJson.get("missionID");
+        String kind = (String) dataJson.get("kind");
+        if (username == null || missionID == null || kind == null) {
+            throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
+
+        UserService loginService = new UserServiceImpl();
+        loginService.getMission(username, missionID, kind);
+
+        result.put("code", 402);
+        result.put("msg", "任务参加成功");
+
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
+
     }
 
     private void quitMission(HttpServletRequest req, HttpServletResponse resp) {
