@@ -2,6 +2,7 @@ package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import group.controller.util.JsonUtil;
 import group.pojo.User;
 import group.pojo.util.MyTime;
 import group.service.ManagerService;
@@ -64,17 +65,10 @@ public class ManageMissionServlet extends HttpServlet {
             String place = dataJson.getString("place");
             String title = dataJson.getString("title");
             String description = dataJson.getString("description");
-
-            Map<String, Integer> time = JSONObject.parseObject(
-                    dataJson.getJSONObject("time").toJSONString(),
-                    new TypeReference<Map<String, Integer>>(){});
-
-            Map<String, Integer> reporterNeeds = JSONObject.parseObject(
-                    dataJson.getJSONObject("reporterNeeds").toJSONString(),
-                    new TypeReference<Map<String, Integer>>(){});
+            Map<String, Integer> time = JsonUtil.readStringIntegerJson(dataJson, "time");
+            Map<String, Integer> reporterNeeds = JsonUtil.readStringIntegerJson(dataJson, "reporterNeeds");
 
             ManagerService managerService = new ManagerServiceImpl();
-
             managerService.addMission(new MyTime(time), place, title, description, reporterNeeds);
 
             result.put("code", 202);

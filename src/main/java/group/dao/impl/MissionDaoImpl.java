@@ -82,7 +82,8 @@ public class MissionDaoImpl implements MissionDao {
 
             for (String str:reporterNeeds.keySet()
             ) {
-                reporterLack.put(str, (Integer) reporterNeeds.get(str) - reporters.getList(str,String.class).size());
+                reporterLack.put(str, (Integer) reporterNeeds.get(str)
+                                      - reporters.getList(str,String.class).size());
             }
             document.put("reporterLack", reporterLack);
 
@@ -109,7 +110,8 @@ public class MissionDaoImpl implements MissionDao {
             int totalNeedCount = 0;
             for (String str:reporterNeeds.keySet()
             ) {
-                int needCount = (Integer) reporterNeeds.get(str) - reporters.getList(str,String.class).size();
+                int needCount = (Integer) reporterNeeds.get(str)
+                                - reporters.getList(str,String.class).size();
                 totalNeedCount += needCount;
                 if (needCount != 0) {
                     reporterLack.put(str, needCount);

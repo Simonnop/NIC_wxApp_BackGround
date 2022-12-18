@@ -38,4 +38,9 @@ public class UserServiceImpl implements UserService {
 
         missionDao.get(username, missionID, kind);
     }
+
+    @Override
+    public void likeMission(String missionID) {
+        // TODO 标记感兴趣的任务, 存储在用户画像中
+    }
 }

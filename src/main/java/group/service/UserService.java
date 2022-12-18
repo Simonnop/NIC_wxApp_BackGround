@@ -14,4 +14,6 @@ public interface UserService {
     ArrayList<Document> showNeedMission();
 
     void getMission(String username, String missionID, String kind);
+
+    void likeMission(String missionID);
 }
