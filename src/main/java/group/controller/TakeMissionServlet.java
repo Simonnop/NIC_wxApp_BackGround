@@ -28,14 +28,19 @@ public class TakeMissionServlet extends HttpServlet {
                     quitMission(req, resp);
                     break;
                 default:
-                    throw new Exception();
+                    throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
         } catch (Exception e) {
             Writer out = resp.getWriter();
             JSONObject result = new JSONObject();
 
-            result.put("code", 403);
-            result.put("msg", "请求信息错误");
+            if (e instanceof AppRuntimeException) {
+                result.put("code", ((AppRuntimeException) e).getCode());
+                result.put("msg", ((AppRuntimeException) e).getMsg());
+            } else {
+                result.put("code", 98);
+                result.put("msg", "后端TakeMissionServlet处理错误");
+            }
 
             String resultStr = result.toJSONString();
             out.write(resultStr);

@@ -3,6 +3,7 @@ package group.pojo;
 import group.pojo.util.MyTime;
 import org.omg.CORBA.INTERNAL;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Mission {
@@ -13,7 +14,7 @@ public class Mission {
     String place;
     String title;
     String description;
-    int status;
+    Map<String,String> status;
     Map<String, Integer> reporterNeeds;
     Map<String, List<User>> reporters;
 
@@ -27,7 +28,14 @@ public class Mission {
         this.place = place;
         this.title = title;
         this.description = description;
-        this.status = 0;
+        this.status = new HashMap<String, String>(){{
+            put("发布任务", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            put("接稿", "未达成");
+            put("写稿", "未达成");
+            put("编辑部审稿", "未达成");
+            put("辅导员审核", "未达成");
+            put("排版", "未达成");
+        }};
         this.reporterNeeds = reporterNeeds;
         this.reporters = new HashMap<>();
         for (String str : reporterNeeds.keySet()
@@ -96,11 +104,11 @@ public class Mission {
         this.description = description;
     }
 
-    public int getStatus() {
+    public Map<String, String> getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Map<String, String> status) {
         this.status = status;
     }
 

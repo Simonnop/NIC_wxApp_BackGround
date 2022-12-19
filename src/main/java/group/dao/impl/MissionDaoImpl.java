@@ -14,13 +14,17 @@ import group.pojo.Mission;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MissionDaoImpl implements MissionDao {
     private static final MissionDaoImpl missionDaoImpl = new MissionDaoImpl();
-    private MissionDaoImpl(){}
 
-    public static MissionDaoImpl getMissionDao(){
+    private MissionDaoImpl() {
+    }
+
+    public static MissionDaoImpl getMissionDao() {
         return missionDaoImpl;
     }
 
@@ -47,7 +51,13 @@ public class MissionDaoImpl implements MissionDao {
         document.put("place", mission.getPlace());
         document.put("title", mission.getTitle());
         document.put("description", mission.getDescription());
-        document.put("status", 0);
+
+        JSONObject status = new JSONObject();
+        for (String key : mission.getStatus().keySet()
+        ) {
+            status.put(key, mission.getStatus().get(key));
+        }
+        document.put("status", status);
 
         JSONObject reporterNeeds = new JSONObject();
         for (String str : mission.getReporterNeeds().keySet()
@@ -80,10 +90,10 @@ public class MissionDaoImpl implements MissionDao {
             Document reporters = (Document) document.get("reporters");
             JSONObject reporterLack = new JSONObject();
 
-            for (String str:reporterNeeds.keySet()
+            for (String str : reporterNeeds.keySet()
             ) {
                 reporterLack.put(str, (Integer) reporterNeeds.get(str)
-                                      - reporters.getList(str,String.class).size());
+                        - reporters.getList(str, String.class).size());
             }
             document.put("reporterLack", reporterLack);
 
@@ -108,10 +118,10 @@ public class MissionDaoImpl implements MissionDao {
             JSONObject reporterLack = new JSONObject();
 
             int totalNeedCount = 0;
-            for (String str:reporterNeeds.keySet()
+            for (String str : reporterNeeds.keySet()
             ) {
                 int needCount = (Integer) reporterNeeds.get(str)
-                                - reporters.getList(str,String.class).size();
+                        - reporters.getList(str, String.class).size();
                 totalNeedCount += needCount;
                 if (needCount != 0) {
                     reporterLack.put(str, needCount);
@@ -132,8 +142,9 @@ public class MissionDaoImpl implements MissionDao {
     @Override
     public void get(String username, String missionID, String kind) {
 
+        Bson filter = Filters.eq("missionID", missionID);
+
         synchronized (this) {
-            Bson filter = Filters.eq("missionID", missionID);
             Document mission = missionCollection.find(filter).first();
             if (mission == null) {
                 throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
@@ -149,5 +160,26 @@ public class MissionDaoImpl implements MissionDao {
 
             missionCollection.updateOne(filter, update);
         }
+
+        // 判断任务人数是否足够,如果不缺人了就改变状态
+        // 采用多线程以挤占响应时间
+        new Thread(new Runnable() {
+            Document mission = missionCollection.find(filter).first();
+            @Override
+            public void run() {
+                Document reporterNeeds = (Document) mission.get("reporterNeeds");
+                Document reporters = (Document) mission.get("reporters");
+
+                for (String str : reporterNeeds.keySet()
+                ) {
+                    if ((Integer) reporterNeeds.get(str)
+                            - reporters.getList(str, String.class).size() != 0) {
+                        return;
+                    }
+                }
+                Bson update = Updates.set("status.接稿", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                missionCollection.updateOne(filter, update);
+            }
+        }).start();
     }
 }

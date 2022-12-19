@@ -78,7 +78,7 @@ public class TestMission {
         String data = "{\"place\": \"111\"," +
                 "\"title\": \"222\"," +
                 "\"description\": \"333\"," +
-                "\"time\": {\"year\": 1234,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
+                "\"time\": {\"year\": 2345,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
                 "\"reporterNeeds\": {\"photo\": 1,\"article\": 1}}";
 
         try {
@@ -194,20 +194,19 @@ public class TestMission {
         }
     }
 
-    @Test
-    public void doubleGet(){
+    public static void doubleGet(){
 
         testGetMission();
         System.out.println("new request");
         testGetMission();
     }
 
-    @Test
-    public void testGetMission() {
+    // get现在是多线程方法,不能用 Junit 测试
+    public static void testGetMission() {
 
         System.out.println(new Date());
 
-        String data = "{\"username\":\"test1\",\"missionID\":\"1234121201\",\"kind\":\"photo\"}";
+        String data = "{\"username\":\"test6\",\"missionID\":\"2345121201\",\"kind\":\"photo\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -231,5 +230,11 @@ public class TestMission {
             String resultStr = result.toJSONString();
             System.out.println(resultStr);
         }
+    }
+
+    public static void main(String[] args) {
+        //testGetMission();
+
+        doubleGet();
     }
 }

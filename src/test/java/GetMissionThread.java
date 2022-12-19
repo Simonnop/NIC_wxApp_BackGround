@@ -1,4 +1,6 @@
 import com.alibaba.fastjson.JSONObject;
+import group.controller.exception.AppRuntimeException;
+import group.controller.exception.ExceptionKind;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
 
@@ -19,7 +21,7 @@ public class GetMissionThread extends Thread {
 
         System.out.println(new Date());
 
-        String data = "{\"username\":\"test1\",\"missionID\":\"1234121201\",\"kind\":\"photo\"}";
+        String data = "{\"username\":\"test6\",\"missionID\":\"2345121201\",\"kind\":\"article\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -29,7 +31,7 @@ public class GetMissionThread extends Thread {
             String missionID = (String) dataJson.get("missionID");
             String kind = (String) dataJson.get("kind");
             if (username == null || missionID == null || kind == null) {
-                throw new Exception();
+                throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
             UserService loginService = new UserServiceImpl();
             loginService.getMission(username, missionID, kind);
@@ -37,12 +39,14 @@ public class GetMissionThread extends Thread {
             result.put("code", 402);
             result.put("msg", "任务参加成功");
 
-        } catch (RuntimeException e) {
-            result.put("code", 401);
-            result.put("msg", "需要人数已满");
-        } catch (Exception e) {
-            result.put("code", 403);
-            result.put("msg", "请求信息错误");
+        }catch (Exception e) {
+            if (e instanceof AppRuntimeException) {
+                result.put("code", ((AppRuntimeException) e).getCode());
+                result.put("msg", ((AppRuntimeException) e).getMsg());
+            } else {
+                result.put("code", 98);
+                result.put("msg", "后端TakeMissionServlet处理错误");
+            }
         } finally {
             String resultStr = result.toJSONString();
             System.out.println(resultStr);
