@@ -92,8 +92,29 @@ public class ShowMissionServlet extends HttpServlet {
 
     }
 
-    protected void showMissionByInput(HttpServletRequest req, HttpServletResponse resp) {
+    protected void showMissionByInput(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Writer out = resp.getWriter();
+        JSONObject result = new JSONObject();
 
+        String data = req.getParameter("data");
+        JSONObject dataJson = JSONObject.parseObject(data);
+        String missionID = (String) dataJson.get("missionID");
+
+        UserServiceImpl userService = new UserServiceImpl();
+
+        if (missionID != null) {
+            result.put("data", userService.showMissionById(missionID).toJson());
+        } else {
+            throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
+        }
+
+        result.put("code", 302);
+        result.put("msg", "指定查询任务成功");
+
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
     }
 
     @Override

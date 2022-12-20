@@ -14,10 +14,9 @@ public class ManagerServiceImpl implements ManagerService {
     MissionDao missionDao = MissionDaoImpl.getMissionDao();
 
     @Override
-    public void addMission(MyTime time, String place, String title,
-                           String description, Map<String, Integer> reporterNeeds) {
+    public void addMission(Mission mission) {
 
-        Mission mission = new Mission(time, place, title, description, reporterNeeds);
+        mission.initializeMission();
         // 添加任务
         missionDao.add(mission);
     }

@@ -17,6 +17,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Test;
 
+import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TestMission {
@@ -75,33 +77,18 @@ public class TestMission {
     @Test
     public void testReceiveMission() {
         JSONObject result = new JSONObject();
-        String data = "{\"place\": \"111\"," +
-                "\"title\": \"222\"," +
-                "\"description\": \"333\"," +
-                "\"time\": {\"year\": 2345,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
+        String data = "{\"place\": \"sda\"," +
+                "\"title\": \"fdsf\"," +
+                "\"description\": \"safsx\"," +
+                "\"time\": {\"year\": 1988,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
                 "\"reporterNeeds\": {\"photo\": 1,\"article\": 1}}";
 
         try {
-
-            JSONObject dataJson = JSONObject.parseObject(data);
-
-            String place = dataJson.getString("place");
-            String title = dataJson.getString("title");
-            String description = dataJson.getString("description");
-
-            Map<String, Integer> time = JSONObject.parseObject(
-                    dataJson.getJSONObject("time").toJSONString(),
-                    new TypeReference<Map<String, Integer>>() {
-                    });
-
-            Map<String, Integer> reporterNeeds = JSONObject.parseObject(
-                    dataJson.getJSONObject("reporterNeeds").toJSONString(),
-                    new TypeReference<Map<String, Integer>>() {
-                    });
+            Mission mission = JSONObject.parseObject(data, Mission.class);
 
             ManagerService managerService = new ManagerServiceImpl();
 
-            managerService.addMission(new MyTime(time), place, title, description, reporterNeeds);
+            managerService.addMission(mission);
 
             result.put("code", 202);
             result.put("msg", "任务添加成功");
@@ -232,9 +219,29 @@ public class TestMission {
         }
     }
 
-    public static void main(String[] args) {
-        //testGetMission();
+    @Test
+    public void testShowMissionById(){
+        JSONObject result = new JSONObject();
 
-        doubleGet();
+        String data = "{\"missionID\":\"2345121201\"}";
+        JSONObject dataJson = JSONObject.parseObject(data);
+        String missionID = (String) dataJson.get("missionID");
+
+        UserServiceImpl userService = new UserServiceImpl();
+
+        result.put("data", userService.showMissionById(missionID));
+
+        result.put("code", 302);
+        result.put("msg", "指定查询任务成功");
+
+        String resultStr = result.toJSONString();
+        System.out.println(resultStr);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+        testGetMission();
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+        //doubleGet();
     }
 }

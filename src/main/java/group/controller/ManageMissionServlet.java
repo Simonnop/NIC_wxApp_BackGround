@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import group.controller.exception.AppRuntimeException;
 import group.controller.exception.ExceptionKind;
 import group.controller.util.JsonSwitcher;
+import group.pojo.Mission;
 import group.pojo.util.MyTime;
 import group.service.ManagerService;
 import group.service.impl.ManagerServiceImpl;
@@ -60,20 +61,13 @@ public class ManageMissionServlet extends HttpServlet {
         JSONObject result = new JSONObject();
 
         String data = req.getParameter("data");
-        JSONObject dataJson = JSONObject.parseObject(data);
-
-        String place = dataJson.getString("place");
-        String title = dataJson.getString("title");
-        String description = dataJson.getString("description");
-        Map<String, Integer> time = JsonSwitcher.readStringIntegerJson(dataJson, "time");
-        Map<String, Integer> reporterNeeds = JsonSwitcher.readStringIntegerJson(dataJson, "reporterNeeds");
-
         /*
         * TODO 改用 parseObject 读取对象
         * */
+        Mission mission = JSONObject.parseObject(data, Mission.class);
 
         ManagerService managerService = new ManagerServiceImpl();
-        managerService.addMission(new MyTime(time), place, title, description, reporterNeeds);
+        managerService.addMission(mission);
 
         result.put("code", 202);
         result.put("msg", "任务添加成功");

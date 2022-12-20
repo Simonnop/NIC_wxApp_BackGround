@@ -13,7 +13,10 @@ public interface UserService {
 
     ArrayList<Document> showNeedMission();
 
+    Document showMissionById(String missionID);
+
     void getMission(String username, String missionID, String kind);
 
-    void likeMission(String missionID);
+    void likeMission(String missionID); // 对该内容感兴趣
+
 }

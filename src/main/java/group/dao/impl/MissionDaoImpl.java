@@ -38,39 +38,43 @@ public class MissionDaoImpl implements MissionDao {
 
         document.put("missionID", mission.getMissionID());
 
-        JSONObject time = new JSONObject();
-        time.put("year", mission.getTime().getYear());
-        time.put("month", mission.getTime().getMonth());
-        time.put("day", mission.getTime().getDay());
-        time.put("beginHour", mission.getTime().getBeginHour());
-        time.put("beginMinute", mission.getTime().getBeginMinute());
-        time.put("endHour", mission.getTime().getEndHour());
-        time.put("endMinute", mission.getTime().getEndMinute());
+        JSONObject time = new JSONObject(){{
+            put("year", mission.getTime().getYear());
+            put("month", mission.getTime().getMonth());
+            put("day", mission.getTime().getDay());
+            put("beginHour", mission.getTime().getBeginHour());
+            put("beginMinute", mission.getTime().getBeginMinute());
+            put("endHour", mission.getTime().getEndHour());
+            put("endMinute", mission.getTime().getEndMinute());
+        }};
         document.put("time", time);
 
         document.put("place", mission.getPlace());
         document.put("title", mission.getTitle());
         document.put("description", mission.getDescription());
 
-        JSONObject status = new JSONObject();
-        for (String key : mission.getStatus().keySet()
-        ) {
-            status.put(key, mission.getStatus().get(key));
-        }
+        JSONObject status = new JSONObject(){{
+            for (String key : mission.getStatus().keySet()
+            ) {
+                put(key, mission.getStatus().get(key));
+            }
+        }};
         document.put("status", status);
 
-        JSONObject reporterNeeds = new JSONObject();
-        for (String str : mission.getReporterNeeds().keySet()
-        ) {
-            reporterNeeds.put(str, mission.getReporterNeeds().get(str));
-        }
+        JSONObject reporterNeeds = new JSONObject(){{
+            for (String str : mission.getReporterNeeds().keySet()
+            ) {
+                put(str, mission.getReporterNeeds().get(str));
+            }
+        }};
         document.put("reporterNeeds", reporterNeeds);
 
-        JSONObject reporters = new JSONObject();
-        for (String str : mission.getReporters().keySet()
-        ) {
-            reporters.put(str, new JSONArray());
-        }
+        JSONObject reporters = new JSONObject(){{
+            for (String str : mission.getReporters().keySet()
+            ) {
+                put(str, new JSONArray());
+            }
+        }};
         document.put("reporters", reporters);
 
         missionCollection.insertOne(document);
@@ -137,6 +141,19 @@ public class MissionDaoImpl implements MissionDao {
         }
 
         return missionArray;
+    }
+
+    @Override
+    public Document showById(String missionID) {
+        Bson filter = Filters.eq("missionID", missionID);
+
+        Document mission = missionCollection.find(filter).first();
+        if (mission == null) {
+                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
+        mission.remove("_id");
+
+        return mission;
     }
 
     @Override

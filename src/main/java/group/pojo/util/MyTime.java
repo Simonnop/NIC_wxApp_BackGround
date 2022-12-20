@@ -110,4 +110,17 @@ public class MyTime {
     public void setEndMinute(int endMinute) {
         this.endMinute = endMinute;
     }
+
+    @Override
+    public String toString() {
+        return "MyTime{" +
+                "year=" + year +
+                ", month=" + month +
+                ", day=" + day +
+                ", beginHour=" + beginHour +
+                ", beginMinute=" + beginMinute +
+                ", endHour=" + endHour +
+                ", endMinute=" + endMinute +
+                '}';
+    }
 }

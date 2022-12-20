@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public interface ManagerService {
-    void addMission(MyTime time, String place, String title,
-                    String description, Map<String, Integer> reporterNeeds);
+    void addMission(Mission mission);
 
     void recommendMission(String missionID, String method);
 }

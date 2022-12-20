@@ -28,6 +28,10 @@ public class Mission {
         this.place = place;
         this.title = title;
         this.description = description;
+        initializeMission();
+    }
+
+    public void initializeMission(){
         this.status = new HashMap<String, String>(){{
             put("发布任务", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             put("接稿", "未达成");
@@ -36,17 +40,16 @@ public class Mission {
             put("辅导员审核", "未达成");
             put("排版", "未达成");
         }};
-        this.reporterNeeds = reporterNeeds;
-        this.reporters = new HashMap<>();
+        reporters = new HashMap<>();
         for (String str : reporterNeeds.keySet()
         ) {
             reporters.put(str, new ArrayList<>());
         }
         // 设置任务号
         if (count < 10) {
-            this.missionID = time.getDataCode() + "0" + count;
+            missionID = time.getDataCode() + "0" + count;
         } else {
-            this.missionID = time.getDataCode() + count;
+            missionID = time.getDataCode() + count;
         }
         // count累加
         count++;
@@ -126,5 +129,19 @@ public class Mission {
 
     public void setReporters(Map<String, List<User>> reporters) {
         this.reporters = reporters;
+    }
+
+    @Override
+    public String toString() {
+        return "Mission{" +
+                "missionID='" + missionID + '\'' +
+                ", time=" + time.toString() +
+                ", place='" + place + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", reporterNeeds=" + reporterNeeds +
+                ", reporters=" + reporters +
+                '}';
     }
 }

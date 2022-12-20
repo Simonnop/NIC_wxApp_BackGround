@@ -34,6 +34,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Document showMissionById(String missionID) {
+
+        return missionDao.showById(missionID);
+    }
+
+    @Override
     public void getMission(String username, String missionID, String kind) {
 
         missionDao.get(username, missionID, kind);
