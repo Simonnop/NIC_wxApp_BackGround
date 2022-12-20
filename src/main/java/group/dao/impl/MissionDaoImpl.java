@@ -160,9 +160,9 @@ public class MissionDaoImpl implements MissionDao {
     public void get(String username, String missionID, String kind) {
 
         Bson filter = Filters.eq("missionID", missionID);
+        Document mission = missionCollection.find(filter).first();
 
         synchronized (this) {
-            Document mission = missionCollection.find(filter).first();
             if (mission == null) {
                 throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
             }
@@ -174,28 +174,47 @@ public class MissionDaoImpl implements MissionDao {
             }
 
             Bson update = Updates.addToSet("reporters." + kind, username);
-
             missionCollection.updateOne(filter, update);
         }
+    }
 
-        // 判断任务人数是否足够,如果不缺人了就改变状态
-        // 采用多线程以挤占响应时间
+    @Override
+    public void updateStatus(String missionID) {
+
+
         new Thread(new Runnable() {
-            Document mission = missionCollection.find(filter).first();
+            // 判断任务人数是否足够,如果不缺人了就改变状态
+            // 采用多线程以挤占响应时间
             @Override
             public void run() {
+
+                try {
+                    Thread.sleep(5000);
+                    // 延迟5s等待添加成功
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Bson filter = Filters.eq("missionID", missionID);
+                Document mission = missionCollection.find(filter).first();
+
                 Document reporterNeeds = (Document) mission.get("reporterNeeds");
                 Document reporters = (Document) mission.get("reporters");
+
+                Bson update = Updates.set("status.接稿", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
                 for (String str : reporterNeeds.keySet()
                 ) {
                     if ((Integer) reporterNeeds.get(str)
                             - reporters.getList(str, String.class).size() != 0) {
-                        return;
+                        update = Updates.set("status.接稿", "未达成");
+                        break;
                     }
                 }
-                Bson update = Updates.set("status.接稿", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
                 missionCollection.updateOne(filter, update);
+
+                System.out.println("updated");
             }
         }).start();
     }

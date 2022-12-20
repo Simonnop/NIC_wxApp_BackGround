@@ -43,6 +43,8 @@ public class UserServiceImpl implements UserService {
     public void getMission(String username, String missionID, String kind) {
 
         missionDao.get(username, missionID, kind);
+        // 更新任务状态(新线程)
+        missionDao.updateStatus(missionID);
     }
 
     @Override

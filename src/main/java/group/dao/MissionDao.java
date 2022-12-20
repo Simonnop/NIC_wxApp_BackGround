@@ -22,4 +22,6 @@ public interface MissionDao {
     // 接任务
     void get(String username, String missionID, String kind);
 
+    void updateStatus(String missionID);
+
 }

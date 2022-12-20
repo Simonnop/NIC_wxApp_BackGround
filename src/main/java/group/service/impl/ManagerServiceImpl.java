@@ -15,7 +15,7 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public void addMission(Mission mission) {
-
+        // 初始化任务id与状态
         mission.initializeMission();
         // 添加任务
         missionDao.add(mission);
