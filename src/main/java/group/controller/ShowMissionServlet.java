@@ -103,7 +103,7 @@ public class ShowMissionServlet extends HttpServlet {
         UserServiceImpl userService = new UserServiceImpl();
 
         if (missionID != null) {
-            result.put("data", userService.showMissionById(missionID).toJson());
+            result.put("data", userService.showMissionById(missionID));
         } else {
             throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
