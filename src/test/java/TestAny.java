@@ -1,4 +1,4 @@
-import group.pojo.util.MyTime;
+import group.pojo.MyTime;
 import org.junit.Test;
 
 public class TestAny {

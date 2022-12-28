@@ -6,8 +6,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import group.controller.exception.AppRuntimeException;
-import group.controller.exception.ExceptionKind;
+import group.exception.AppRuntimeException;
+import group.exception.ExceptionKind;
 import group.dao.MissionDao;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
@@ -169,8 +169,12 @@ public class MissionDaoImpl implements MissionDao {
 
             Document reporterNeeds = (Document) mission.get("reporterNeeds");
             Document reporters = (Document) mission.get("reporters");
+
             if ((Integer) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
                 throw new AppRuntimeException(ExceptionKind.ENOUGH_PEOPLE);
+            }
+            if ((Integer) reporterNeeds.get(kind) == 0) {
+                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
             }
 
             Bson update = Updates.addToSet("reporters." + kind, username);
@@ -179,8 +183,22 @@ public class MissionDaoImpl implements MissionDao {
     }
 
     @Override
-    public void updateStatus(String missionID) {
+    public void updateFilePath(String filePath, String missionID) {
+        Bson filter = Filters.eq("missionID", missionID);
+        Document mission = missionCollection.find(filter).first();
 
+        synchronized (this) {
+            if (mission == null) {
+                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+            }
+
+            Bson update = Updates.addToSet("filePath", filePath);
+            missionCollection.updateOne(filter, update);
+        }
+    }
+
+    @Override
+    public void updateStatus(String missionID) {
 
         new Thread(new Runnable() {
             // 判断任务人数是否足够,如果不缺人了就改变状态
@@ -218,4 +236,5 @@ public class MissionDaoImpl implements MissionDao {
             }
         }).start();
     }
+
 }

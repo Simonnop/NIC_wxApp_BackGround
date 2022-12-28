@@ -1,14 +1,13 @@
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import group.controller.exception.AppRuntimeException;
-import group.controller.exception.ExceptionKind;
+import group.exception.AppRuntimeException;
+import group.exception.ExceptionKind;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
-import group.pojo.util.MyTime;
+import group.pojo.MyTime;
 import group.service.ManagerService;
 import group.service.UserService;
 import group.service.impl.ManagerServiceImpl;
@@ -17,7 +16,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Test;
 
-import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 

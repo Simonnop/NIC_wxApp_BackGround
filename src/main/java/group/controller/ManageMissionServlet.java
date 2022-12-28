@@ -1,13 +1,13 @@
 package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import group.controller.exception.AppRuntimeException;
-import group.controller.exception.ExceptionKind;
-import group.controller.util.JsonSwitcher;
+import group.controller.util.LogPrinter;
+import group.exception.AppRuntimeException;
+import group.exception.ExceptionKind;
 import group.pojo.Mission;
-import group.pojo.util.MyTime;
 import group.service.ManagerService;
 import group.service.impl.ManagerServiceImpl;
+import org.apache.log4j.Logger;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,10 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Map;
+import java.net.URLDecoder;
 
 @WebServlet("/manage")
 public class ManageMissionServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(ManageMissionServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
@@ -33,6 +37,9 @@ public class ManageMissionServlet extends HttpServlet {
                 case "delete":
                     deleteMissionResponse(req, resp);
                     break;
+                case "getFilePath":
+                    getMissionFilePathResponse(req, resp);
+                    break;
                 default:
                     throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
@@ -46,6 +53,8 @@ public class ManageMissionServlet extends HttpServlet {
             } else {
                 result.put("code", 98);
                 result.put("msg", "后端ManageMissionServlet处理错误");
+                logger.error(URLDecoder.decode(req.getQueryString(),"utf-8"));
+                LogPrinter.printException(logger,e);
             }
 
             String resultStr = result.toJSONString();
@@ -54,6 +63,8 @@ public class ManageMissionServlet extends HttpServlet {
             System.out.println(resultStr);
         }
     }
+
+
 
     protected void addMissionResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -84,6 +95,10 @@ public class ManageMissionServlet extends HttpServlet {
     }
 
     protected void deleteMissionResponse(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+
+    protected void getMissionFilePathResponse(HttpServletRequest req, HttpServletResponse resp) {
 
     }
 

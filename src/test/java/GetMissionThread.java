@@ -1,6 +1,6 @@
 import com.alibaba.fastjson.JSONObject;
-import group.controller.exception.AppRuntimeException;
-import group.controller.exception.ExceptionKind;
+import group.exception.AppRuntimeException;
+import group.exception.ExceptionKind;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
 

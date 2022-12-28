@@ -1,4 +1,4 @@
-package group.pojo.util;
+package group.pojo;
 
 import java.util.Map;
 

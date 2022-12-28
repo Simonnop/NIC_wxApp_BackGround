@@ -1,4 +1,4 @@
-package group.controller.exception;
+package group.exception;
 
 public class AppRuntimeException extends RuntimeException {
     int code;

@@ -1,10 +1,12 @@
 package group.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import group.controller.exception.*;
-import group.pojo.User;
+import group.controller.util.LogPrinter;
+import group.exception.AppRuntimeException;
+import group.exception.ExceptionKind;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,9 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URLDecoder;
 
 @WebServlet("/take")
 public class TakeMissionServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(TakeMissionServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
@@ -40,6 +47,8 @@ public class TakeMissionServlet extends HttpServlet {
             } else {
                 result.put("code", 98);
                 result.put("msg", "后端TakeMissionServlet处理错误");
+                logger.error(URLDecoder.decode(req.getQueryString(),"utf-8"));
+                LogPrinter.printException(logger,e);
             }
 
             String resultStr = result.toJSONString();
