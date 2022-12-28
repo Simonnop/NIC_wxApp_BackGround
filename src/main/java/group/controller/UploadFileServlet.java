@@ -11,6 +11,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +47,7 @@ public class UploadFileServlet extends HttpServlet {
             String missionID = req.getParameter("missionID");
             // 检测是否为多媒体上传
             if (!ServletFileUpload.isMultipartContent(req)|| missionID == null) {
+                System.out.println(missionID);
                 throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
 

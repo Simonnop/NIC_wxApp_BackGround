@@ -32,6 +32,10 @@
         <servlet-name>takeMissionServlet</servlet-name>
         <servlet-class>group.controller.TakeMissionServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>uploadFileServlet</servlet-name>
+        <servlet-class>group.controller.UploadFileServlet</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -49,6 +53,10 @@
     <servlet-mapping>
         <servlet-name>takeMissionServlet</servlet-name>
         <url-pattern>/take</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>uploadFileServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
     </servlet-mapping>
 
 

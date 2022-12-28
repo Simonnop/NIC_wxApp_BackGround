@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
                         throw new AppRuntimeException(ExceptionKind.FILE_SAVE_ERROR);
                     }
                     // 将文件名保存到对应的任务下
-                    missionDao.updateFilePath(filePath, missionID);
+                    missionDao.updateFilePath(fileName, missionID);
                 }
             }
         }
