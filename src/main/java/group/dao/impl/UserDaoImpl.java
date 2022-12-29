@@ -41,4 +41,24 @@ public class UserDaoImpl implements UserDao {
 
         return user;
     }
+
+    @Override
+    public Document getUserInfo(String username) {
+
+        Bson filter = Filters.eq("username", username);
+        // 根据查询过滤器查询
+        FindIterable<Document> findIterable = userCollection.find(filter);
+
+        for (Document document : findIterable) {
+            // 遍历结果,但一般只会查出一个
+            document.remove("_id");
+            document.remove("classStr");
+            document.remove("password");
+            document.remove("tel");
+            document.remove("QQ");
+            return document;
+        }
+
+        return null;
+    }
 }

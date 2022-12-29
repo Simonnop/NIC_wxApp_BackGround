@@ -1,5 +1,6 @@
 package group.service;
 
+import com.alibaba.fastjson.JSONObject;
 import group.pojo.User;
 import org.apache.commons.fileupload.FileItem;
 import org.bson.Document;
@@ -10,6 +11,8 @@ import java.util.List;
 public interface UserService {
 
     User tryLogin(String username);
+
+    JSONObject getUserInfo(String username);
 
     ArrayList<Document> showAllMission();
 

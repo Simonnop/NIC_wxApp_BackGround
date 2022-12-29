@@ -1,5 +1,7 @@
 package group.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import group.dao.MissionDao;
 import group.dao.UserDao;
 import group.dao.impl.MissionDaoImpl;
@@ -25,6 +27,32 @@ public class UserServiceImpl implements UserService {
     public User tryLogin(String username) {
 
         return userDao.findUser(username);
+    }
+
+    @Override
+    public JSONObject getUserInfo(String username) {
+
+        JSONObject data = new JSONObject();
+
+        Document userInfo = userDao.getUserInfo(username);
+
+        data.put("userid", userInfo.get("userid"));
+        data.put("username", userInfo.get("username"));
+        data.put("identity", userInfo.get("identity"));
+        int levelCount = 1;
+        for (Integer level :
+                userInfo.getList("authorityLevel",Integer.class)) {
+            data.put("authority" + levelCount++, level);
+        }
+        data.put("missionTaken", userInfo.get("missionTaken"));
+        JSONArray missionCompleted = new JSONArray();
+        for (Document missionDoc :
+                userInfo.getList("missionCompleted", Document.class)) {
+            missionCompleted.add(missionDoc.get("missionID"));
+        }
+        data.put("missionCompleted", missionCompleted);
+
+        return data;
     }
 
     @Override

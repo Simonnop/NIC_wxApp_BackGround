@@ -1,7 +1,14 @@
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import group.dao.util.DataBaseUtil;
 import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.junit.Test;
 
 import java.util.Objects;
@@ -60,4 +67,51 @@ public class TestLogin {
         System.out.println(resultStr);
         System.out.println("a is " + a);
     }
+
+    @Test
+    public void testGetInfo(){
+        String username = "test";
+
+        Bson filter = Filters.eq("username", username);
+        // 根据查询过滤器查询
+        MongoCollection<Document> userCollection = DataBaseUtil.getMongoDB().getCollection("User");
+        FindIterable<Document> findIterable = userCollection.find(filter);
+
+        Document singleDocument = null;
+
+        for (Document document : findIterable) {
+            // 遍历结果,但一般只会查出一个
+            singleDocument = document;
+        }
+
+        if (singleDocument == null) {
+            return;
+        }
+
+        singleDocument.remove("_id");
+        singleDocument.remove("classStr");
+        singleDocument.remove("password");
+        singleDocument.remove("tel");
+        singleDocument.remove("QQ");
+        System.out.println(singleDocument);
+
+        JSONObject data = new JSONObject();
+        data.put("userid", singleDocument.get("userid"));
+        data.put("username", singleDocument.get("username"));
+        data.put("identity", singleDocument.get("identity"));
+        int levelCount = 1;
+        for (Integer level :
+                singleDocument.getList("authorityLevel",Integer.class)) {
+            data.put("authority" + levelCount++, level);
+        }
+        data.put("missionTaken", singleDocument.get("missionTaken"));
+        JSONArray missionCompleted = new JSONArray();
+        for (Document missionDoc :
+                singleDocument.getList("missionCompleted", Document.class)) {
+            missionCompleted.add(missionDoc.get("missionID"));
+        }
+        data.put("missionCompleted", missionCompleted);
+        System.out.println(data);
+    }
+
 }

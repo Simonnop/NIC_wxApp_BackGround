@@ -76,8 +76,9 @@ public class LoginServlet extends HttpServlet {
             throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
 
-        UserService loginService = new UserServiceImpl();
-        User user = loginService.tryLogin(username);
+        UserService userService = new UserServiceImpl();
+        User user = userService.tryLogin(username);
+        JSONObject returnData = userService.getUserInfo(username);
 
         if (user == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
@@ -87,6 +88,7 @@ public class LoginServlet extends HttpServlet {
         } else {
             result.put("code", 102);
             result.put("msg", "登录成功");
+            result.put("data", returnData);
         }
 
         String resultStr = result.toJSONString();
