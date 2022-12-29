@@ -6,7 +6,7 @@ public class LogPrinter {
     public static void printException(Logger logger, Exception e) {
         logger.error(e);
         for (StackTraceElement element : e.getStackTrace()) {
-            if (element.toString().equals("javax.servlet.http.HttpServlet.service(HttpServlet.java:655)")) {
+            if (element.toString().contains("javax.servlet.http.HttpServlet.service")) {
                 return;
             }
             logger.error(element);
