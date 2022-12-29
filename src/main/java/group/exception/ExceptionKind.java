@@ -5,7 +5,7 @@ public enum ExceptionKind {
     DATABASE_NOT_FOUND(99, "数据库无此字段"),
     REQUEST_INFO_ERROR(103, "请求信息错误"),
     ENOUGH_PEOPLE(401, "需要人数已满"),
-    FILE_SAVE_ERROR(501,"服务端文件储存失败");
+    SAME_FILE_ERROR(501,"已含同名文件");
 
     ExceptionKind(int code, String msg) {
         this.code = code;

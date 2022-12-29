@@ -26,8 +26,7 @@ public class UploadFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(UploadFileServlet.class);
 
-    // 上传文件存储目录
-    private static final String UPLOAD_DIRECTORY = "work_files";
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,7 +37,7 @@ public class UploadFileServlet extends HttpServlet {
         // 中文处理
         upload.setHeaderEncoding("UTF-8");
         // 这个路径相对当前应用的目录
-        String uploadPath = req.getServletContext().getRealPath("/") + File.separator + UPLOAD_DIRECTORY;
+        String uploadPath = "C:\\ProgramData\\NIC\\work_files";
 
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();

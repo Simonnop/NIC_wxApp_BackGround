@@ -57,12 +57,12 @@ public class UserServiceImpl implements UserService {
     public void likeMission(String missionID) {
 
         /*
-        * TODO 标记感兴趣的任务, 存储在用户画像中
-        * */
+         * TODO 标记感兴趣的任务, 存储在用户画像中
+         * */
     }
 
     @Override
-    public void uploadFile(List<FileItem> formItems, String missionID,String uploadPath) {
+    public void uploadFile(List<FileItem> formItems, String missionID, String uploadPath) {
         // 如果目录不存在则创建
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
@@ -73,19 +73,17 @@ public class UserServiceImpl implements UserService {
             for (FileItem item : formItems) {
                 // 处理不在表单中的字段
                 if (!item.isFormField()) {
-                    String fileName = new File(item.getName()).getName();
+                    String fileName = new File(missionID + "_" + item.getName()).getName();
                     String filePath = uploadPath + File.separator + fileName;
                     File storeFile = new File(filePath);
-                    // 在控制台输出文件的上传路径
-                    System.out.println(filePath);
+                    // 将文件名保存到对应的任务下
+                    missionDao.updateFilePath(fileName, missionID);
                     // 保存文件到硬盘
                     try {
                         item.write(storeFile);
                     } catch (Exception e) {
-                        throw new AppRuntimeException(ExceptionKind.FILE_SAVE_ERROR);
+                        throw new AppRuntimeException(ExceptionKind.SAME_FILE_ERROR);
                     }
-                    // 将文件名保存到对应的任务下
-                    missionDao.updateFilePath(fileName, missionID);
                 }
             }
         }
