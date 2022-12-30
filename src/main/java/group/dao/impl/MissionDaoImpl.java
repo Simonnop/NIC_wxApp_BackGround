@@ -158,7 +158,7 @@ public class MissionDaoImpl implements MissionDao {
     }
 
     @Override
-    public void tryTakeByUser(String username, String missionID, String kind, ClientSession clientSession) {
+    public void tryTakeByUser(String username, String missionID, String kind) {
 
         Bson filter = Filters.eq("missionID", missionID);
         Document mission = missionCollection.find(filter).first();
@@ -179,7 +179,7 @@ public class MissionDaoImpl implements MissionDao {
             }
 
             Bson update = Updates.addToSet("reporters." + kind, username);
-            missionCollection.updateOne(clientSession,filter, update);
+            missionCollection.updateOne(filter, update);
         }
     }
 

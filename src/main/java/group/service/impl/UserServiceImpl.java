@@ -93,7 +93,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public void getMission(String username, String missionID, String kind) {
 
+        // 不带事务写法: 不验证 username
+
         boolean success = true;
+        try {
+            missionDao.tryTakeByUser(username, missionID, kind);
+        } catch (Exception e) {
+            success = false;
+            throw e;
+        } finally {
+            if (success) {
+                new Thread(()->userDao.takeMission(username, missionID)).start();
+                new Thread(()->missionDao.updateStatus(missionID)).start(); // 其实本来就是一个新线程,再包一层为了好读
+            }
+        }
+
+        // 带事务写法
+
+        /*boolean success = true;
 
         ClientSession clientSession = mongoClient.startSession();
         try {
@@ -112,7 +129,7 @@ public class UserServiceImpl implements UserService {
                 missionDao.updateStatus(missionID);
             }
             clientSession.close();
-        }
+        }*/
 
     }
 

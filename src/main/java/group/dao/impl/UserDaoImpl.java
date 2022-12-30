@@ -59,7 +59,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void takeMission(String username, String missionID, ClientSession clientSession) {
+    public void takeMission(String username, String missionID) {
 
         Bson filter = Filters.eq("username", username);
         Document user = userCollection.find(filter).first();
@@ -68,6 +68,6 @@ public class UserDaoImpl implements UserDao {
         }
 
         Bson update = Updates.addToSet("missionTaken", missionID);
-        userCollection.updateOne(clientSession,filter, update);
+        userCollection.updateOne(filter, update);
     }
 }

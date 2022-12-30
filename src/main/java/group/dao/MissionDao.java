@@ -19,7 +19,7 @@ public interface MissionDao {
     Document showById(String missionID);
 
     // 接任务
-    void tryTakeByUser(String username, String missionID, String kind, ClientSession clientSession);
+    void tryTakeByUser(String username, String missionID, String kind);
 
     void updateStatus(String missionID);
 

@@ -11,5 +11,5 @@ public interface UserDao {
 
     Document getUserInfo(String username);
 
-    void takeMission(String username, String missionID, ClientSession clientSession);
+    void takeMission(String username, String missionID);
 }
