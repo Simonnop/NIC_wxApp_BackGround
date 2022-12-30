@@ -33,44 +33,39 @@ public class TestLogin {
 
         System.out.println(resultStr);
 
-        testLoginByInput();
-        testLoginByInput();
-
     }
 
-    private static void testLoginByInput(){
+    @Test
+    public void testLoginByInput(){
 
         String data = "{\"password\":\"123456\",\"username\":\"test\"}";
 
         JSONObject dataJson = JSONObject.parseObject(data);
+        JSONObject result = new JSONObject();
 
         String username = (String) dataJson.get("username");
         String password = (String) dataJson.get("password");
-        String a = dataJson.getString("a");
 
-        UserService loginService = new UserServiceImpl();
-        User user = loginService.tryLogin(username);
+        UserService userService = new UserServiceImpl();
+        Boolean correctLogin = userService.checkUser(username, password);
+        JSONObject returnData = userService.getUserInfo(username);
 
-        JSONObject result = new JSONObject();
-        if (user == null) {
-            result.put("code", 100);
-            result.put("msg", "查无此用户");
-        } else if (!Objects.equals(user.getPassword(), password)) {
-            result.put("code", 101);
-            result.put("msg", "密码错误");
-        } else {
+        if (correctLogin) {
             result.put("code", 102);
             result.put("msg", "登录成功");
+            result.put("data", returnData);
+        } else {
+            result.put("code", 101);
+            result.put("msg", "密码错误");
         }
 
         String resultStr = result.toJSONString();
         System.out.println(resultStr);
-        System.out.println("a is " + a);
     }
 
     @Test
     public void testGetInfo(){
-        String username = "test";
+        String username = "test1";
 
         Bson filter = Filters.eq("username", username);
         // 根据查询过滤器查询
@@ -85,14 +80,10 @@ public class TestLogin {
         }
 
         if (singleDocument == null) {
+            System.out.println("out");
             return;
         }
 
-        singleDocument.remove("_id");
-        singleDocument.remove("classStr");
-        singleDocument.remove("password");
-        singleDocument.remove("tel");
-        singleDocument.remove("QQ");
         System.out.println(singleDocument);
 
         JSONObject data = new JSONObject();

@@ -1,5 +1,6 @@
 package group.dao;
 
+import com.mongodb.client.ClientSession;
 import group.pojo.User;
 import org.bson.Document;
 
@@ -9,4 +10,6 @@ public interface UserDao {
     User findUser(String username);
 
     Document getUserInfo(String username);
+
+    void takeMission(String username, String missionID, ClientSession clientSession);
 }

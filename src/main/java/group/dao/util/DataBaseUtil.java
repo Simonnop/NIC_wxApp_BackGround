@@ -12,6 +12,7 @@ public class DataBaseUtil {
     // 饿汉单例,提高加载速度
 
     private static final MongoDatabase mongoDatabase;
+    private static final MongoClient mongoClient;
     private DataBaseUtil(){}
 
     static{
@@ -19,12 +20,17 @@ public class DataBaseUtil {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
-        MongoClient mongoClient = MongoClients.create(settings);
+        mongoClient = MongoClients.create(settings);
         mongoDatabase = mongoClient.getDatabase("NIC");
     }
 
     public static MongoDatabase getMongoDB(){
 
         return mongoDatabase;
+    }
+
+    public static MongoClient getMongoClient(){
+
+        return mongoClient;
     }
 }

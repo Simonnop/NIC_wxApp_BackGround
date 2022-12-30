@@ -68,9 +68,7 @@ public class ShowMissionServlet extends HttpServlet {
 
         UserServiceImpl userService = new UserServiceImpl();
 
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.addAll(userService.showAllMission());
-        result.put("data", jsonArray);
+        result.put("data", userService.showAllMission());
 
         result.put("code", 302);
         result.put("msg", "全部查询任务成功");
@@ -89,9 +87,7 @@ public class ShowMissionServlet extends HttpServlet {
 
         UserServiceImpl userService = new UserServiceImpl();
 
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.addAll(userService.showNeedMission());
-        result.put("data", jsonArray);
+        result.put("data", userService.showNeedMission());
 
         result.put("code", 302);
         result.put("msg", "缺人查询任务成功");
@@ -113,11 +109,8 @@ public class ShowMissionServlet extends HttpServlet {
 
         UserServiceImpl userService = new UserServiceImpl();
 
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.add(userService.showMissionById(missionID));
-
         if (missionID != null) {
-            result.put("data", jsonArray);
+            result.put("data", userService.showMissionById(missionID));
         } else {
             throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }

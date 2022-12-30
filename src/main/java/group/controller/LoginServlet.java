@@ -51,8 +51,8 @@ public class LoginServlet extends HttpServlet {
             } else {
                 result.put("code", 98);
                 result.put("msg", "后端LoginServlet处理错误");
-                logger.error(URLDecoder.decode(req.getQueryString(),"utf-8"));
-                LogPrinter.printException(logger,e);
+                logger.error(URLDecoder.decode(req.getQueryString(), "utf-8"));
+                LogPrinter.printException(logger, e);
             }
 
             String resultStr = result.toJSONString();
@@ -77,18 +77,15 @@ public class LoginServlet extends HttpServlet {
         }
 
         UserService userService = new UserServiceImpl();
-        User user = userService.tryLogin(username);
-        JSONObject returnData = userService.getUserInfo(username);
+        Boolean correctLogin = userService.checkUser(username, password);
 
-        if (user == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        } else if (!Objects.equals(user.getPassword(), password)) {
-            result.put("code", 101);
-            result.put("msg", "密码错误");
-        } else {
+        if (correctLogin) {
             result.put("code", 102);
             result.put("msg", "登录成功");
-            result.put("data", returnData);
+            result.put("data", userService.getUserInfo(username));
+        } else {
+            result.put("code", 101);
+            result.put("msg", "密码错误");
         }
 
         String resultStr = result.toJSONString();
@@ -108,15 +105,8 @@ public class LoginServlet extends HttpServlet {
 
         String username = (String) dataJson.get("username");
 
-        UserService loginService = new UserServiceImpl();
-        User user = loginService.tryLogin(username);
-
-        if (user == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        } else {
-            result.put("code", 102);
-            result.put("msg", "登录成功");
-        }
+        result.put("code", 102);
+        result.put("msg", "登录成功");
 
         String resultStr = result.toJSONString();
         out.write(resultStr);

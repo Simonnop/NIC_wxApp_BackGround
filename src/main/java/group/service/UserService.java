@@ -1,24 +1,22 @@
 package group.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import group.pojo.User;
 import org.apache.commons.fileupload.FileItem;
-import org.bson.Document;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface UserService {
 
-    User tryLogin(String username);
+    Boolean checkUser(String username,String password);
 
     JSONObject getUserInfo(String username);
 
-    ArrayList<Document> showAllMission();
+    JSONArray showAllMission();
 
-    ArrayList<Document> showNeedMission();
+    JSONArray showNeedMission();
 
-    Document showMissionById(String missionID);
+    JSONArray showMissionById(String missionID);
 
     void getMission(String username, String missionID, String kind);
 

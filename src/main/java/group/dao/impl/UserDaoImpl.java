@@ -1,10 +1,13 @@
 package group.dao.impl;
 
-import com.mongodb.client.FindIterable;
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import group.dao.UserDao;
 import group.dao.util.DataBaseUtil;
+import group.exception.AppRuntimeException;
+import group.exception.ExceptionKind;
 import group.pojo.User;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -12,9 +15,11 @@ import org.bson.conversions.Bson;
 public class UserDaoImpl implements UserDao {
 
     private static final UserDaoImpl userDaoImpl = new UserDaoImpl();
-    private UserDaoImpl(){}
 
-    public static UserDaoImpl getUserDao(){
+    private UserDaoImpl() {
+    }
+
+    public static UserDaoImpl getUserDao() {
         return userDaoImpl;
     }
 
@@ -27,17 +32,15 @@ public class UserDaoImpl implements UserDao {
         // 指定查询过滤器
         Bson filter = Filters.eq("username", username);
         // 根据查询过滤器查询
-        FindIterable<Document> findIterable = userCollection.find(filter);
+        Document document = userCollection.find(filter).first();
+        if (document == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
 
         User user = null;
-
-        for (Document document : findIterable) {
-            // 遍历结果,但一般只会查出一个
-            String password = (String) document.get("password");
-            String classStr = (String) document.get("classStr");
-            user = new User(username, password, classStr);
-            break;
-        }
+        String password = (String) document.get("password");
+        String classStr = (String) document.get("classStr");
+        user = new User(username, password, classStr);
 
         return user;
     }
@@ -47,18 +50,24 @@ public class UserDaoImpl implements UserDao {
 
         Bson filter = Filters.eq("username", username);
         // 根据查询过滤器查询
-        FindIterable<Document> findIterable = userCollection.find(filter);
-
-        for (Document document : findIterable) {
-            // 遍历结果,但一般只会查出一个
-            document.remove("_id");
-            document.remove("classStr");
-            document.remove("password");
-            document.remove("tel");
-            document.remove("QQ");
-            return document;
+        Document returnDoc = userCollection.find(filter).first();
+        if (returnDoc == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
 
-        return null;
+        return returnDoc;
+    }
+
+    @Override
+    public void takeMission(String username, String missionID, ClientSession clientSession) {
+
+        Bson filter = Filters.eq("username", username);
+        Document user = userCollection.find(filter).first();
+        if (user == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
+
+        Bson update = Updates.addToSet("missionTaken", missionID);
+        userCollection.updateOne(clientSession,filter, update);
     }
 }

@@ -1,5 +1,6 @@
 package group.dao;
 
+import com.mongodb.client.ClientSession;
 import group.pojo.Mission;
 import org.bson.Document;
 
@@ -18,7 +19,7 @@ public interface MissionDao {
     Document showById(String missionID);
 
     // 接任务
-    void get(String username, String missionID, String kind);
+    void tryTakeByUser(String username, String missionID, String kind, ClientSession clientSession);
 
     void updateStatus(String missionID);
 

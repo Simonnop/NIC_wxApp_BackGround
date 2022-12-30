@@ -2,6 +2,7 @@ package group.dao.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -157,7 +158,7 @@ public class MissionDaoImpl implements MissionDao {
     }
 
     @Override
-    public void get(String username, String missionID, String kind) {
+    public void tryTakeByUser(String username, String missionID, String kind, ClientSession clientSession) {
 
         Bson filter = Filters.eq("missionID", missionID);
         Document mission = missionCollection.find(filter).first();
@@ -178,7 +179,7 @@ public class MissionDaoImpl implements MissionDao {
             }
 
             Bson update = Updates.addToSet("reporters." + kind, username);
-            missionCollection.updateOne(filter, update);
+            missionCollection.updateOne(clientSession,filter, update);
         }
     }
 

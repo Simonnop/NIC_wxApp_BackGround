@@ -189,9 +189,9 @@ public class TestMission {
     // get现在是多线程方法,不能用 Junit 测试
     public static void testGetMission() {
 
-        System.out.println(new Date());
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
 
-        String data = "{\"username\":\"test6\",\"missionID\":\"2345121201\",\"kind\":\"photo\"}";
+        String data = "{\"username\":\"test\",\"missionID\":\"12022122902\",\"kind\":\"article\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -203,8 +203,8 @@ public class TestMission {
             if (username == null || missionID == null || kind == null) {
                 throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
-            UserService loginService = new UserServiceImpl();
-            loginService.getMission(username, missionID, kind);
+            UserService userService = new UserServiceImpl();
+            userService.getMission(username, missionID, kind);
 
             result.put("code", 402);
             result.put("msg", "任务参加成功");
@@ -237,7 +237,7 @@ public class TestMission {
     }
 
     public static void main(String[] args) {
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+
         testGetMission();
         System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
         //doubleGet();
