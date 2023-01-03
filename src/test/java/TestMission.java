@@ -77,9 +77,12 @@ public class TestMission {
         JSONObject result = new JSONObject();
         String data = "{\"place\": \"sda\"," +
                 "\"title\": \"fdsf\"," +
+                "\"element\": \"1\"," +
                 "\"description\": \"safsx\"," +
                 "\"time\": {\"year\": 1988,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
                 "\"reporterNeeds\": {\"photo\": 1,\"article\": 1}}";
+
+        System.out.println(data);
 
         try {
             Mission mission = JSONObject.parseObject(data, Mission.class);

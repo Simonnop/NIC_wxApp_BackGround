@@ -7,6 +7,7 @@ public class Mission {
     private static int count = 1;
 
     String missionID;
+    int element;  // 任务属性
     MyTime time;
     String place;
     String title;
@@ -31,9 +32,16 @@ public class Mission {
     public void initializeMission(){
         this.status = new HashMap<String, String>(){{
             put("发布任务", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-            put("接稿", "未达成");
-            put("写稿", "未达成");
-            put("编辑部审稿", "未达成");
+            System.out.println(element);
+            if (element == 0) {
+                put("接稿", "未达成");
+                put("写稿", "未达成");
+                put("编辑部审稿", "未达成");
+            } else {
+                put("接稿", "跳过");
+                put("写稿", "跳过");
+                put("编辑部审稿", "跳过");
+            }
             put("辅导员审核", "未达成");
             put("排版", "未达成");
         }};
@@ -126,6 +134,14 @@ public class Mission {
 
     public void setReporters(Map<String, List<User>> reporters) {
         this.reporters = reporters;
+    }
+
+    public int getElement() {
+        return element;
+    }
+
+    public void setElement(int element) {
+        this.element = element;
     }
 
     @Override

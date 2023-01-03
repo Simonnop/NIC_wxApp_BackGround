@@ -1,5 +1,6 @@
 package group.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import group.controller.util.LogPrinter;
 import group.exception.AppRuntimeException;
@@ -72,10 +73,11 @@ public class ManageMissionServlet extends HttpServlet {
         JSONObject result = new JSONObject();
 
         String data = req.getParameter("data");
-        /*
-        * TODO 改用 parseObject 读取对象
-        * */
+        JSONObject dataJson = JSONObject.parseObject(data);
+        int missionElement = (int) dataJson.get("element");
+
         Mission mission = JSONObject.parseObject(data, Mission.class);
+        mission.setElement(missionElement);
 
         ManagerService managerService = new ManagerServiceImpl();
         managerService.addMission(mission);

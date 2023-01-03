@@ -36,6 +36,10 @@ public class ShowMissionServlet extends HttpServlet {
                     break;
                 case "showByInput":
                     showMissionByInput(req, resp);
+                    // 时间
+                    // 状态
+                    // 评分
+                    // 标签
                     break;
                 default:
                     throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
