@@ -3,6 +3,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import group.controller.util.LogPrinter;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.dao.util.DataBaseUtil;
@@ -16,6 +17,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Test;
 
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -77,9 +79,10 @@ public class TestMission {
         JSONObject result = new JSONObject();
         String data = "{\"place\": \"sda\"," +
                 "\"title\": \"fdsf\"," +
+                "\"publisher\": \"test2\"," +
                 "\"element\": \"1\"," +
                 "\"description\": \"safsx\"," +
-                "\"time\": {\"year\": 1988,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
+                "\"time\": {\"year\": 1977,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
                 "\"reporterNeeds\": {\"photo\": 1,\"article\": 1}}";
 
         System.out.println(data);
@@ -194,7 +197,7 @@ public class TestMission {
 
         System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
 
-        String data = "{\"username\":\"test\",\"missionID\":\"12022122902\",\"kind\":\"article\"}";
+        String data = "{\"username\":\"test\",\"missionID\":\"2022120402\",\"kind\":\"article\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -214,6 +217,13 @@ public class TestMission {
 
         }catch (Exception e) {
             e.printStackTrace();
+            if (e instanceof AppRuntimeException) {
+                result.put("code", ((AppRuntimeException) e).getCode());
+                result.put("msg", ((AppRuntimeException) e).getMsg());
+            } else {
+                result.put("code", 98);
+                result.put("msg", "后端LoginServlet处理错误");
+            }
         } finally {
             String resultStr = result.toJSONString();
             System.out.println(resultStr);

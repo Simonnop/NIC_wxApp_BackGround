@@ -11,6 +11,7 @@ public class Mission {
     MyTime time;
     String place;
     String title;
+    String publisher;
     String description;
     Map<String,String> status;
     Map<String, Integer> reporterNeeds;
@@ -134,6 +135,14 @@ public class Mission {
 
     public void setReporters(Map<String, List<User>> reporters) {
         this.reporters = reporters;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     public int getElement() {

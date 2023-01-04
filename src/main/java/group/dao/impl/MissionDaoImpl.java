@@ -53,6 +53,7 @@ public class MissionDaoImpl implements MissionDao {
         document.put("place", mission.getPlace());
         document.put("title", mission.getTitle());
         document.put("description", mission.getDescription());
+        document.put("publisher", mission.getPublisher());
 
         JSONObject status = new JSONObject(){{
             for (String key : mission.getStatus().keySet()
@@ -171,11 +172,19 @@ public class MissionDaoImpl implements MissionDao {
             Document reporterNeeds = (Document) mission.get("reporterNeeds");
             Document reporters = (Document) mission.get("reporters");
 
-            if ((Integer) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
+            if (reporterNeeds.get(kind) == null || (int) reporterNeeds.get(kind) == 0) {
+                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+            }
+
+            if ((int) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
                 throw new AppRuntimeException(ExceptionKind.ENOUGH_PEOPLE);
             }
-            if ((Integer) reporterNeeds.get(kind) == 0) {
-                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+
+            for (String reporter :
+                    reporters.getList(kind, String.class)) {
+                if (reporter.equals(username)) {
+                    throw new AppRuntimeException(ExceptionKind.ALREADY_PARTICIPATE);
+                }
             }
 
             Bson update = Updates.addToSet("reporters." + kind, username);
