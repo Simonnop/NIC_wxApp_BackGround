@@ -1,6 +1,6 @@
 package group.dao;
 
-import com.mongodb.client.ClientSession;
+import com.mongodb.client.FindIterable;
 import group.pojo.Mission;
 import org.bson.Document;
 
@@ -12,11 +12,9 @@ public interface MissionDao {
     void add(Mission mission);
 
     // 显示所有任务
-    ArrayList<Document> showAll();
-    // 显示缺人的任务
-    ArrayList<Document> showNeed();
+    FindIterable<Document> showAll();
 
-    Document showById(String missionID);
+    FindIterable<Document> showById(String missionID);
 
     // 接任务
     void tryTakeByUser(String username, String missionID, String kind);

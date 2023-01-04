@@ -1,4 +1,3 @@
-import group.pojo.MyTime;
 import org.junit.Test;
 
 public class TestAny {
@@ -9,7 +8,5 @@ public class TestAny {
         int b = 0;
         System.out.println(b);
 
-        MyTime myTime = new MyTime();
-        System.out.println(myTime.getTime());
     }
 }

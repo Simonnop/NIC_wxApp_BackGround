@@ -4,14 +4,11 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import group.dao.util.DataBaseUtil;
-import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Test;
-
-import java.util.Objects;
 
 public class TestLogin {
     @Test
@@ -48,7 +45,7 @@ public class TestLogin {
 
         UserService userService = new UserServiceImpl();
         Boolean correctLogin = userService.checkUser(username, password);
-        JSONObject returnData = userService.getUserInfo(username);
+        JSONObject returnData = userService.getUserLoginInfo(username);
 
         if (correctLogin) {
             result.put("code", 102);

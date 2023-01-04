@@ -1,5 +1,8 @@
 package group.pojo;
 
+import org.bson.Document;
+
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -8,7 +11,7 @@ public class Mission {
 
     String missionID;
     int element;  // 任务属性
-    MyTime time;
+    Map<String, Integer> time;
     String place;
     String title;
     String publisher;
@@ -21,12 +24,13 @@ public class Mission {
         count++;
     }
 
-    public Mission(MyTime time, String place, String title,
+    public Mission(Map<String, Integer> time, String place, String title,
                    String description, Map<String, Integer> reporterNeeds) {
         this.time = time;
         this.place = place;
         this.title = title;
         this.description = description;
+        this.reporterNeeds = reporterNeeds;
         initializeMission();
     }
 
@@ -53,9 +57,9 @@ public class Mission {
         }
         // 设置任务号
         if (count < 10) {
-            missionID = time.getDataCode() + "0" + count;
+            missionID = getDataCode() + "0" + count;
         } else {
-            missionID = time.getDataCode() + count;
+            missionID = getDataCode() + count;
         }
         // count累加
         count++;
@@ -63,6 +67,36 @@ public class Mission {
         if (count == 99) {
             count = 1;
         }
+    }
+
+    public Document changeToDocument()  {
+        Document doc = new Document();
+
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field :
+                fields) {
+            field.setAccessible(true);
+            try {
+                doc.put(field.getName(), field.get(this));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            doc.remove("count");
+        }
+
+        return doc;
+    }
+
+    public String getDataCode() {
+        String gap1 = "";
+        String gap2 = "";
+        if (time.get("month") < 10) {
+            gap1 = "0";
+        }
+        if (time.get("day") < 10) {
+            gap2 = "0";
+        }
+        return "" + time.get("year") + gap1 + time.get("month") + gap2 + time.get("day");
     }
 
     public static int getCount() {
@@ -81,11 +115,11 @@ public class Mission {
         this.missionID = missionID;
     }
 
-    public MyTime getTime() {
+    public Map<String, Integer> getTime() {
         return time;
     }
 
-    public void setTime(MyTime time) {
+    public void setTime(Map<String, Integer> time) {
         this.time = time;
     }
 

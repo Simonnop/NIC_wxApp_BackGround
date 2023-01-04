@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import group.controller.util.LogPrinter;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
-import group.pojo.User;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
 import org.apache.log4j.Logger;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLDecoder;
-import java.util.Objects;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -82,7 +80,7 @@ public class LoginServlet extends HttpServlet {
         if (correctLogin) {
             result.put("code", 102);
             result.put("msg", "登录成功");
-            result.put("data", userService.getUserInfo(username));
+            result.put("data", userService.getUserLoginInfo(username));
         } else {
             result.put("code", 101);
             result.put("msg", "密码错误");

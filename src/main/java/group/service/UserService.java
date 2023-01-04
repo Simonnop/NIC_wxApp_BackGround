@@ -10,7 +10,7 @@ public interface UserService {
 
     Boolean checkUser(String username,String password);
 
-    JSONObject getUserInfo(String username);
+    JSONObject getUserLoginInfo(String username);
 
     JSONArray showAllMission();
 

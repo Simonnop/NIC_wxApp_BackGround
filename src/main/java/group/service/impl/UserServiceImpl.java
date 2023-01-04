@@ -6,7 +6,7 @@ import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.TransactionOptions;
 import com.mongodb.WriteConcern;
-import com.mongodb.client.ClientSession;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import group.dao.MissionDao;
 import group.dao.UserDao;
@@ -20,6 +20,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.bson.Document;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,56 +45,60 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public JSONObject getUserInfo(String username) {
-
-        JSONObject data = new JSONObject();
+    public JSONObject getUserLoginInfo(String username) {
 
         Document userInfo = userDao.getUserInfo(username);
 
-        data.put("userid", userInfo.get("userid"));
-        data.put("username", userInfo.get("username"));
-        data.put("identity", userInfo.get("identity"));
-        data.put("missionTaken", userInfo.get("missionTaken"));
-
         int levelCount = 1;
         for (Integer level : userInfo.getList("authorityLevel", Integer.class)) {
-            data.put("authority" + levelCount++, level);
+            userInfo.put("authority" + levelCount++, level);
         }
 
-        JSONArray missionCompleted = new JSONArray();
-        for (Document missionDoc : userInfo.getList("missionCompleted", Document.class)) {
-            missionCompleted.add(missionDoc.get("missionID"));
-        }
-        data.put("missionCompleted", missionCompleted);
+        userInfo.remove("_id");
+        userInfo.remove("authorityLevel");
+        userInfo.remove("QQ");
+        userInfo.remove("tel");
+        userInfo.remove("classStr");
+        userInfo.remove("password");
 
-        return data;
+        return (JSONObject) JSONObject.toJSON(userInfo);
     }
 
     @Override
     public JSONArray showAllMission() {
         return new JSONArray() {{
-            addAll(missionDao.showAll());
+            addAll(changeAndCalculate(missionDao.showAll()));
         }};
     }
 
     @Override
     public JSONArray showNeedMission() {
+
+        ArrayList<Document> documents = new ArrayList<>();
+        // 判断是否缺人
+        for (Document document : changeAndCalculate(missionDao.showAll())) {
+            if (((Document) document.get("status"))
+                    .get("接稿")
+                    .equals("未达成")) {
+                documents.add(document);
+            }
+        }
         return new JSONArray() {{
-            addAll(missionDao.showNeed());
+            addAll(documents);
         }};
     }
 
     @Override
     public JSONArray showMissionById(String missionID) {
         return new JSONArray() {{
-            add(missionDao.showById(missionID));
+            addAll(changeAndCalculate(missionDao.showById(missionID)));
         }};
     }
 
     @Override
     public void getMission(String username, String missionID, String kind) {
 
-        // 不带事务写法: 不验证 username
+        // 不带事务写法: 不验证 username 响应时间更快
 
         boolean success = true;
         try {
@@ -103,8 +108,8 @@ public class UserServiceImpl implements UserService {
             throw e;
         } finally {
             if (success) {
-                new Thread(()->userDao.takeMission(username, missionID)).start();
-                new Thread(()->missionDao.updateStatus(missionID)).start(); // 其实本来就是一个新线程,再包一层为了好读
+                new Thread(() -> userDao.takeMission(username, missionID)).start();
+                new Thread(() -> missionDao.updateStatus(missionID)).start(); // 其实本来就是一个新线程,再包一层为了好读
             }
         }
 
@@ -172,5 +177,36 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
+    }
+
+    private ArrayList<Document> changeAndCalculate(FindIterable<Document> documents) {
+        // 改成可以 addAll 的格式并计算 缺少人数
+
+        ArrayList<Document> missionArray = new ArrayList<>();
+
+        for (Document document : documents) {
+            // 计算还缺少的人数
+            missionArray.add(changeAndCalculate(document));
+        }
+
+        return missionArray;
+    }
+
+    private Document changeAndCalculate(Document document) {
+
+        document.remove("_id");
+        // 计算还缺少的人数
+        Document reporterNeeds = (Document) document.get("reporterNeeds");
+        Document reporters = (Document) document.get("reporters");
+        JSONObject reporterLack = new JSONObject();
+
+        for (String str : reporterNeeds.keySet()
+        ) {
+            reporterLack.put(str, (Integer) reporterNeeds.get(str)
+                    - reporters.getList(str, String.class).size());
+        }
+        document.put("reporterLack", reporterLack);
+
+        return document;
     }
 }

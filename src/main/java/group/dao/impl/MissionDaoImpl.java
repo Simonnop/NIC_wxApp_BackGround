@@ -1,8 +1,6 @@
 package group.dao.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.mongodb.client.ClientSession;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -35,127 +33,34 @@ public class MissionDaoImpl implements MissionDao {
     @Override
     public void add(Mission mission) {
 
-        Document document = new Document();
-
-        document.put("missionID", mission.getMissionID());
-
-        JSONObject time = new JSONObject(){{
-            put("year", mission.getTime().getYear());
-            put("month", mission.getTime().getMonth());
-            put("day", mission.getTime().getDay());
-            put("beginHour", mission.getTime().getBeginHour());
-            put("beginMinute", mission.getTime().getBeginMinute());
-            put("endHour", mission.getTime().getEndHour());
-            put("endMinute", mission.getTime().getEndMinute());
-        }};
-        document.put("time", time);
-
-        document.put("place", mission.getPlace());
-        document.put("title", mission.getTitle());
-        document.put("description", mission.getDescription());
-        document.put("publisher", mission.getPublisher());
-
-        JSONObject status = new JSONObject(){{
-            for (String key : mission.getStatus().keySet()
-            ) {
-                put(key, mission.getStatus().get(key));
-            }
-        }};
-        document.put("status", status);
-
-        JSONObject reporterNeeds = new JSONObject(){{
-            for (String str : mission.getReporterNeeds().keySet()
-            ) {
-                put(str, mission.getReporterNeeds().get(str));
-            }
-        }};
-        document.put("reporterNeeds", reporterNeeds);
-
-        JSONObject reporters = new JSONObject(){{
-            for (String str : mission.getReporters().keySet()
-            ) {
-                put(str, new JSONArray());
-            }
-        }};
-        document.put("reporters", reporters);
+        Document document = mission.changeToDocument();
 
         missionCollection.insertOne(document);
+
     }
 
     @Override
-    public ArrayList<Document> showAll() {
+    public FindIterable<Document> showAll() {
 
-        ArrayList<Document> missionArray = new ArrayList<>();
-
-        FindIterable<Document> findIterable = missionCollection.find();
-
-        for (Document document : findIterable) {
-            document.remove("_id");
-            // 计算还缺少的人数
-            Document reporterNeeds = (Document) document.get("reporterNeeds");
-            Document reporters = (Document) document.get("reporters");
-            JSONObject reporterLack = new JSONObject();
-
-            for (String str : reporterNeeds.keySet()
-            ) {
-                reporterLack.put(str, (Integer) reporterNeeds.get(str)
-                        - reporters.getList(str, String.class).size());
-            }
-            document.put("reporterLack", reporterLack);
-
-            missionArray.add(document);
+        FindIterable<Document> documents = missionCollection.find();
+        if (documents.first() == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
 
-        return missionArray;
+        return documents;
     }
 
     @Override
-    public ArrayList<Document> showNeed() {
-
-        ArrayList<Document> missionArray = new ArrayList<>();
-
-        FindIterable<Document> findIterable = missionCollection.find();
-
-        for (Document document : findIterable) {
-            document.remove("_id");
-            // 计算还缺少的人数
-            Document reporterNeeds = (Document) document.get("reporterNeeds");
-            Document reporters = (Document) document.get("reporters");
-            JSONObject reporterLack = new JSONObject();
-
-            int totalNeedCount = 0;
-            for (String str : reporterNeeds.keySet()
-            ) {
-                int needCount = (Integer) reporterNeeds.get(str)
-                        - reporters.getList(str, String.class).size();
-                totalNeedCount += needCount;
-                if (needCount != 0) {
-                    reporterLack.put(str, needCount);
-                }
-            }
-            document.put("reporterLack", reporterLack);
-
-            // 如果不需要人了,跳过本次循环
-            if (totalNeedCount == 0) {
-                continue;
-            }
-            missionArray.add(document);
-        }
-
-        return missionArray;
-    }
-
-    @Override
-    public Document showById(String missionID) {
+    public FindIterable<Document> showById(String missionID) {
+        
         Bson filter = Filters.eq("missionID", missionID);
 
-        Document mission = missionCollection.find(filter).first();
-        if (mission == null) {
-                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        FindIterable<Document> documents = missionCollection.find(filter);
+        if (documents.first() == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
-        mission.remove("_id");
 
-        return mission;
+        return documents;
     }
 
     @Override

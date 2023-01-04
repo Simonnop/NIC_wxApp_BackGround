@@ -3,12 +3,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import group.controller.util.LogPrinter;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.dao.util.DataBaseUtil;
 import group.pojo.Mission;
-import group.pojo.MyTime;
 import group.service.ManagerService;
 import group.service.UserService;
 import group.service.impl.ManagerServiceImpl;
@@ -17,7 +15,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Test;
 
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -30,44 +27,24 @@ public class TestMission {
 
         Mission mission1 = new Mission();
         Mission mission = new Mission(
-                new MyTime(2022, 12, 4, 19, 0, 20, 0),
+                new HashMap<String,Integer>(){{
+                    put("year",2021);
+                    put("month",12);
+                    put("day",21);
+                    put("beginHour",12);
+                    put("beginMinute",21);
+                    put("endHour",13);
+                    put("endMinute",21);
+                }},
                 "东九D216", "12月例会", "吃蛋糕", new HashMap<String, Integer>() {{
             put("photo", 1);
         }}
         );
 
-        Document document = new Document();
 
-        document.put("missionID", mission.getMissionID());
+        Document document = mission.changeToDocument();
 
-        JSONObject time = new JSONObject();
-        time.put("year", mission.getTime().getYear());
-        time.put("month", mission.getTime().getMonth());
-        time.put("day", mission.getTime().getDay());
-        time.put("beginHour", mission.getTime().getBeginHour());
-        time.put("beginMinute", mission.getTime().getBeginMinute());
-        time.put("endHour", mission.getTime().getEndHour());
-        time.put("endMinute", mission.getTime().getEndMinute());
-        document.put("time", time);
-
-        document.put("place", mission.getPlace());
-        document.put("title", mission.getTitle());
-        document.put("description", mission.getDescription());
-        document.put("status", 0);
-
-        JSONObject reporterNeeds = new JSONObject();
-        for (String str : mission.getReporterNeeds().keySet()
-        ) {
-            reporterNeeds.put(str, mission.getReporterNeeds().get(str));
-        }
-        document.put("reporterNeeds", reporterNeeds);
-
-        JSONObject reporters = new JSONObject();
-        for (String str : mission.getReporters().keySet()
-        ) {
-            reporters.put(str, new JSONArray());
-        }
-        document.put("reporters", reporters);
+        System.out.println(document);
 
         missionCollection.insertOne(document);
 
@@ -176,6 +153,7 @@ public class TestMission {
             result.put("msg", "请求显示任务成功");
 
         } catch (Exception e) {
+            e.printStackTrace();
             result.put("code", 303);
             result.put("msg", "请求显示任务信息错误");
         } finally {
