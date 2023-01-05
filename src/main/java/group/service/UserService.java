@@ -16,6 +16,8 @@ public interface UserService {
 
     JSONArray showNeedMission();
 
+    JSONArray showMissionGotDraft();
+
     JSONArray showMissionById(String missionID);
 
     void getMission(String username, String missionID, String kind);

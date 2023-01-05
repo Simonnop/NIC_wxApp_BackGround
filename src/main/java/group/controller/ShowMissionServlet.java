@@ -34,6 +34,9 @@ public class ShowMissionServlet extends HttpServlet {
                 case "showNeed":
                     showNeedMission(req, resp);
                     break;
+                case "showGotDraft":
+                    showMissionGotDraft(req, resp);
+                    break;
                 case "showByInput":
                     showMissionByInput(req, resp);
                     // 时间
@@ -63,6 +66,24 @@ public class ShowMissionServlet extends HttpServlet {
             out.flush();
             System.out.println(resultStr);
         }
+    }
+
+    private void showMissionGotDraft(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+        Writer out = resp.getWriter();
+        JSONObject result = new JSONObject();
+
+        UserServiceImpl userService = new UserServiceImpl();
+
+        result.put("data", userService.showMissionGotDraft());
+
+        result.put("code", 302);
+        result.put("msg", "查询已有稿件任务成功");
+
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
     }
 
     protected void showAllMission(HttpServletRequest req, HttpServletResponse resp) throws IOException {

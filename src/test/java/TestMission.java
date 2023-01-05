@@ -146,7 +146,8 @@ public class TestMission {
             UserServiceImpl userService = new UserServiceImpl();
 
             JSONArray jsonArray = new JSONArray();
-            jsonArray.addAll(userService.showNeedMission());
+            jsonArray.addAll(userService.showMissionGotDraft());
+            //jsonArray.addAll(userService.showNeedMission());
             result.put("data", jsonArray);
 
             result.put("code", 302);

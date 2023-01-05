@@ -102,6 +102,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public JSONArray showMissionGotDraft() {
+
+        FindIterable<Document> documents = missionDao.showAll();
+        if (documents.first() == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
+        ArrayList<Document> documentArrayList = changeFormAndCalculate(documents);
+
+        // 判断是否缺人
+        documentArrayList.removeIf(document -> ((Document) document
+                .get("status"))
+                .get("写稿")
+                .equals("未达成"));
+        return new JSONArray() {{
+            addAll(documentArrayList);
+        }};
+    }
+
+    @Override
     public JSONArray showMissionById(String missionID) {
 
         FindIterable<Document> documents = missionDao.searchMissionByInput("missionID", missionID);
