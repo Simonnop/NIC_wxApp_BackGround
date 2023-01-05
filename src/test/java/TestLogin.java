@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import group.dao.util.DataBaseUtil;
 import group.service.UserService;
+import group.service.manager.UserManager;
 import group.service.impl.UserServiceImpl;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -44,8 +45,8 @@ public class TestLogin {
         String password = (String) dataJson.get("password");
 
         UserService userService = new UserServiceImpl();
-        Boolean correctLogin = userService.checkUser(username, password);
-        JSONObject returnData = userService.getUserLoginInfo(username);
+        Boolean correctLogin = userService.tryLogin(username, password);
+        JSONObject returnData = UserManager.getUserManager().getUserLoginInfo(username);
 
         if (correctLogin) {
             result.put("code", 102);

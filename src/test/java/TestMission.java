@@ -143,10 +143,10 @@ public class TestMission {
         JSONObject result = new JSONObject();
 
         try {
-            UserServiceImpl userService = new UserServiceImpl();
+            ManagerService managerService = new ManagerServiceImpl();
 
             JSONArray jsonArray = new JSONArray();
-            jsonArray.addAll(userService.showMissionGotDraft());
+            jsonArray.addAll(managerService.showMissionGotDraft());
             //jsonArray.addAll(userService.showNeedMission());
             result.put("data", jsonArray);
 
@@ -196,7 +196,7 @@ public class TestMission {
                 throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
             UserService userService = new UserServiceImpl();
-            userService.getMission(username, missionID, kind);
+            userService.tryGetMission(username, missionID, kind);
 
             result.put("code", 402);
             result.put("msg", "任务参加成功");

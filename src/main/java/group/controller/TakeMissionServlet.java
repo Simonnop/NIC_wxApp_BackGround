@@ -74,7 +74,7 @@ public class TakeMissionServlet extends HttpServlet {
         }
 
         UserService loginService = new UserServiceImpl();
-        loginService.getMission(username, missionID, kind);
+        loginService.tryGetMission(username, missionID, kind);
 
         result.put("code", 402);
         result.put("msg", "任务参加成功");

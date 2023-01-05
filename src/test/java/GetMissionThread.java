@@ -21,7 +21,7 @@ public class GetMissionThread extends Thread {
 
         System.out.println(new Date());
 
-        String data = "{\"username\":\"test6\",\"missionID\":\"2345121201\",\"kind\":\"article\"}";
+        String data = "{\"username\":\"test6\",\"missionID\":\"2022123054\",\"kind\":\"article\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -34,7 +34,7 @@ public class GetMissionThread extends Thread {
                 throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
             }
             UserService loginService = new UserServiceImpl();
-            loginService.getMission(username, missionID, kind);
+            loginService.tryGetMission(username, missionID, kind);
 
             result.put("code", 402);
             result.put("msg", "任务参加成功");

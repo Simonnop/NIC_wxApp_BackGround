@@ -5,6 +5,7 @@ import group.controller.util.LogPrinter;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.service.UserService;
+import group.service.manager.UserManager;
 import group.service.impl.UserServiceImpl;
 import org.apache.log4j.Logger;
 
@@ -75,12 +76,12 @@ public class LoginServlet extends HttpServlet {
         }
 
         UserService userService = new UserServiceImpl();
-        Boolean correctLogin = userService.checkUser(username, password);
+        Boolean correctLogin = userService.tryLogin(username, password);
 
         if (correctLogin) {
             result.put("code", 102);
             result.put("msg", "登录成功");
-            result.put("data", userService.getUserLoginInfo(username));
+            result.put("data", UserManager.getUserManager().getUserLoginInfo(username));
         } else {
             result.put("code", 101);
             result.put("msg", "密码错误");

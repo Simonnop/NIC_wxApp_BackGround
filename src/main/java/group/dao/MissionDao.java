@@ -16,7 +16,5 @@ public interface MissionDao {
 
     <T, K> void addToSetInMission(String filterField, T filterValue, String updateField, K updateValue);
 
-    void updateStatus(String missionID);
-
-    void updateFilePath(String filePath, String missionID);
+    <T, K> void updateInMission(String filterField, T filterValue, String updateField, K updateValue);
 }

@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.controller.util.LogPrinter;
+import group.service.ManagerService;
+import group.service.impl.ManagerServiceImpl;
 import group.service.impl.UserServiceImpl;
 import org.apache.log4j.Logger;
 
@@ -73,9 +75,9 @@ public class ShowMissionServlet extends HttpServlet {
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
 
-        UserServiceImpl userService = new UserServiceImpl();
+        ManagerService managerService = new ManagerServiceImpl();
 
-        result.put("data", userService.showMissionGotDraft());
+        result.put("data", managerService.showMissionGotDraft());
 
         result.put("code", 302);
         result.put("msg", "查询已有稿件任务成功");

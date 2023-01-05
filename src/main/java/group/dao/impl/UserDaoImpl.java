@@ -31,11 +31,7 @@ public class UserDaoImpl implements UserDao {
         // 指定查询过滤器
         Bson filter = Filters.eq(field, value);
         // 根据查询过滤器查询
-        Document user = userCollection.find(filter).first();
-        if (user == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-        return user;
+        return userCollection.find(filter).first();
     }
 
     @Override
