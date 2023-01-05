@@ -29,12 +29,14 @@ public class UserServiceImpl implements UserService {
     final UserDao userDao = UserDaoImpl.getUserDao();
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
     final MissionManager missionManager = MissionManager.getMissionManager();
+    /*
     MongoClient mongoClient = DataBaseUtil.getMongoClient();
     TransactionOptions txnOptions = TransactionOptions.builder()
             .readPreference(ReadPreference.primary())
             .readConcern(ReadConcern.LOCAL)
             .writeConcern(WriteConcern.MAJORITY)
             .build();
+    */
 
     @Override
     public Boolean tryLogin(String username, String password) {
