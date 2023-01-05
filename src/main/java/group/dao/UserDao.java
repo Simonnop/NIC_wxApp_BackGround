@@ -7,9 +7,7 @@ import org.bson.Document;
 public interface UserDao {
 
     // 通过用户名查找用户
-    User findUser(String username);
+    <T> Document searchUserByInput(String field, T value);
 
-    Document getUserInfo(String username);
-
-    void takeMission(String username, String missionID);
+    <T, K> void addToSetInUser(String filterField, T filterValue, String updateField, K updateValue);
 }

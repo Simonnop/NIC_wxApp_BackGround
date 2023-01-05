@@ -31,70 +31,33 @@ public class MissionDaoImpl implements MissionDao {
     MongoCollection<Document> missionCollection = DataBaseUtil.getMongoDB().getCollection("Mission");
 
     @Override
-    public void add(Mission mission) {
+    public void addMission(Mission mission) {
 
         Document document = mission.changeToDocument();
 
         missionCollection.insertOne(document);
-
     }
 
     @Override
     public FindIterable<Document> showAll() {
 
-        FindIterable<Document> documents = missionCollection.find();
-        if (documents.first() == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-
-        return documents;
+        return missionCollection.find();
     }
 
     @Override
-    public FindIterable<Document> showById(String missionID) {
-        
-        Bson filter = Filters.eq("missionID", missionID);
+    public <T> FindIterable<Document> searchMissionByInput(String field, T value) {
 
-        FindIterable<Document> documents = missionCollection.find(filter);
-        if (documents.first() == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
+        Bson filter = Filters.eq(field, value);
 
-        return documents;
+        return missionCollection.find(filter);
     }
 
-    @Override
-    public void tryTakeByUser(String username, String missionID, String kind) {
+    public <T, K> void addToSetInMission(String filterField, T filterValue, String updateField, K updateValue) {
 
-        Bson filter = Filters.eq("missionID", missionID);
-        Document mission = missionCollection.find(filter).first();
+        Bson filter = Filters.eq(filterField, filterValue);
+        Bson update = Updates.addToSet(updateField, updateValue);
 
-        synchronized (this) {
-            if (mission == null) {
-                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-            }
-
-            Document reporterNeeds = (Document) mission.get("reporterNeeds");
-            Document reporters = (Document) mission.get("reporters");
-
-            if (reporterNeeds.get(kind) == null || (int) reporterNeeds.get(kind) == 0) {
-                throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-            }
-
-            if ((int) reporterNeeds.get(kind) == reporters.getList(kind, String.class).size()) {
-                throw new AppRuntimeException(ExceptionKind.ENOUGH_PEOPLE);
-            }
-
-            for (String reporter :
-                    reporters.getList(kind, String.class)) {
-                if (reporter.equals(username)) {
-                    throw new AppRuntimeException(ExceptionKind.ALREADY_PARTICIPATE);
-                }
-            }
-
-            Bson update = Updates.addToSet("reporters." + kind, username);
-            missionCollection.updateOne(filter, update);
-        }
+        missionCollection.updateOne(filter, update);
     }
 
     @Override

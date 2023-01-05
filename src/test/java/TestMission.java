@@ -170,12 +170,19 @@ public class TestMission {
         testGetMission();
     }
 
+    public static void main(String[] args) {
+
+        testGetMission();
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+        //doubleGet();
+    }
+
     // get现在是多线程方法,不能用 Junit 测试
     public static void testGetMission() {
 
         System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
 
-        String data = "{\"username\":\"test\",\"missionID\":\"2022120402\",\"kind\":\"article\"}";
+        String data = "{\"username\":\"test\",\"missionID\":\"2022123050\",\"kind\":\"article\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -227,10 +234,5 @@ public class TestMission {
         System.out.println(resultStr);
     }
 
-    public static void main(String[] args) {
 
-        testGetMission();
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
-        //doubleGet();
-    }
 }

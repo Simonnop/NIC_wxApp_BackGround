@@ -7,14 +7,14 @@ import group.service.ManagerService;
 
 public class ManagerServiceImpl implements ManagerService {
 
-    MissionDao missionDao = MissionDaoImpl.getMissionDao();
+    final MissionDao missionDao = MissionDaoImpl.getMissionDao();
 
     @Override
     public void addMission(Mission mission) {
         // 初始化任务id与状态
         mission.initializeMission();
         // 添加任务
-        missionDao.add(mission);
+        missionDao.addMission(mission);
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.Date;
 public class TestSearchMissionByInput {
     @Test
     public void testSearchFunc() {
-        //SearchMissionByInput("");
+        SearchMissionByInput("missionID","2345121201");
     }
 
     public <T> void SearchMissionByInput(String field, T value){

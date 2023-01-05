@@ -15,6 +15,7 @@ import group.dao.impl.UserDaoImpl;
 import group.dao.util.DataBaseUtil;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
+import group.pojo.User;
 import group.service.UserService;
 import org.apache.commons.fileupload.FileItem;
 import org.bson.Document;
@@ -26,8 +27,8 @@ import java.util.Objects;
 
 public class UserServiceImpl implements UserService {
 
-    UserDao userDao = UserDaoImpl.getUserDao();
-    MissionDao missionDao = MissionDaoImpl.getMissionDao();
+    final UserDao userDao = UserDaoImpl.getUserDao();
+    final MissionDao missionDao = MissionDaoImpl.getMissionDao();
     MongoClient mongoClient = DataBaseUtil.getMongoClient();
     TransactionOptions txnOptions = TransactionOptions.builder()
             .readPreference(ReadPreference.primary())
@@ -38,16 +39,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean checkUser(String username, String password) {
 
-        return Objects.equals(
-                userDao.findUser(username)
-                        .getPassword(),
-                password);
+        Document user = userDao.searchUserByInput("username", username);
+        if (user == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
+
+        return password.equals(user.get("password"));
     }
 
     @Override
     public JSONObject getUserLoginInfo(String username) {
 
-        Document userInfo = userDao.getUserInfo(username);
+        Document userInfo = userDao.searchUserByInput("username", username);
 
         int levelCount = 1;
         for (Integer level : userInfo.getList("authorityLevel", Integer.class)) {
@@ -66,32 +69,47 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JSONArray showAllMission() {
+
+        FindIterable<Document> documents = missionDao.showAll();
+        if (documents.first() == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
         return new JSONArray() {{
-            addAll(changeAndCalculate(missionDao.showAll()));
+            addAll(changeFormAndCalculate(documents));
         }};
     }
 
     @Override
     public JSONArray showNeedMission() {
 
-        ArrayList<Document> documents = new ArrayList<>();
+        ArrayList<Document> documentArrayList = new ArrayList<>();
+
+        FindIterable<Document> documents = missionDao.showAll();
+        if (documents.first() == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
         // 判断是否缺人
-        for (Document document : changeAndCalculate(missionDao.showAll())) {
+        for (Document document : changeFormAndCalculate(documents)) {
             if (((Document) document.get("status"))
                     .get("接稿")
                     .equals("未达成")) {
-                documents.add(document);
+                documentArrayList.add(document);
             }
         }
         return new JSONArray() {{
-            addAll(documents);
+            addAll(documentArrayList);
         }};
     }
 
     @Override
     public JSONArray showMissionById(String missionID) {
+
+        FindIterable<Document> documents = missionDao.searchMissionByInput("missionID", missionID);
+        if (documents.first() == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
         return new JSONArray() {{
-            addAll(changeAndCalculate(missionDao.showById(missionID)));
+            addAll(changeFormAndCalculate(documents));
         }};
     }
 
@@ -99,16 +117,38 @@ public class UserServiceImpl implements UserService {
     public void getMission(String username, String missionID, String kind) {
 
         // 不带事务写法: 不验证 username 响应时间更快
-
         boolean success = true;
         try {
-            missionDao.tryTakeByUser(username, missionID, kind);
+            synchronized (missionDao) {
+                Document document = missionDao.searchMissionByInput("missionID", missionID).first();
+                // 验证非空
+                if (document == null) {
+                    throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+                }
+                calculateLack(document);
+                // 验证非满员
+                if (((Document) document.get("reporterLack"))
+                        .get(kind)
+                        .equals(0)) {
+                    throw new AppRuntimeException(ExceptionKind.ENOUGH_PEOPLE);
+                }
+                // 验证未参与
+                if (((ArrayList<?>) ((Document) document
+                        .get("reporters"))
+                        .get(kind))
+                        .contains(username)) {
+                    throw new AppRuntimeException(ExceptionKind.ALREADY_PARTICIPATE);
+                }
+                missionDao.addToSetInMission("missionID", missionID, "reporters." + kind, username);
+            }
         } catch (Exception e) {
             success = false;
             throw e;
         } finally {
             if (success) {
-                new Thread(() -> userDao.takeMission(username, missionID)).start();
+                new Thread(() -> userDao.addToSetInUser(
+                        "username", username, "missionTaken", missionID))
+                        .start();
                 new Thread(() -> missionDao.updateStatus(missionID)).start(); // 其实本来就是一个新线程,再包一层为了好读
             }
         }
@@ -179,26 +219,25 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private ArrayList<Document> changeAndCalculate(FindIterable<Document> documents) {
+    private ArrayList<Document> changeFormAndCalculate(FindIterable<Document> documents) {
         // 改成可以 addAll 的格式并计算 缺少人数
-
         ArrayList<Document> missionArray = new ArrayList<>();
 
         for (Document document : documents) {
             // 计算还缺少的人数
-            missionArray.add(changeAndCalculate(document));
+            missionArray.add(calculateLack(document));
         }
 
         return missionArray;
     }
 
-    private Document changeAndCalculate(Document document) {
+    private Document calculateLack(Document document) {
 
         document.remove("_id");
         // 计算还缺少的人数
         Document reporterNeeds = (Document) document.get("reporterNeeds");
         Document reporters = (Document) document.get("reporters");
-        JSONObject reporterLack = new JSONObject();
+        Document reporterLack = new Document();
 
         for (String str : reporterNeeds.keySet()
         ) {

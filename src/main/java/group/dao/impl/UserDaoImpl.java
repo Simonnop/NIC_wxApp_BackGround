@@ -27,47 +27,24 @@ public class UserDaoImpl implements UserDao {
     MongoCollection<Document> userCollection = DataBaseUtil.getMongoDB().getCollection("User");
 
     @Override
-    public User findUser(String username) {
-
+    public <T> Document searchUserByInput(String field, T value) {
         // 指定查询过滤器
-        Bson filter = Filters.eq("username", username);
+        Bson filter = Filters.eq(field, value);
         // 根据查询过滤器查询
-        Document document = userCollection.find(filter).first();
-        if (document == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-
-        User user = null;
-        String password = (String) document.get("password");
-        String classStr = (String) document.get("classStr");
-        user = new User(username, password, classStr);
-
-        return user;
-    }
-
-    @Override
-    public Document getUserInfo(String username) {
-
-        Bson filter = Filters.eq("username", username);
-        // 根据查询过滤器查询
-        Document returnDoc = userCollection.find(filter).first();
-        if (returnDoc == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-
-        return returnDoc;
-    }
-
-    @Override
-    public void takeMission(String username, String missionID) {
-
-        Bson filter = Filters.eq("username", username);
         Document user = userCollection.find(filter).first();
         if (user == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
+        return user;
+    }
 
-        Bson update = Updates.addToSet("missionTaken", missionID);
+    @Override
+    public <T, K> void addToSetInUser(String filterField, T filterValue, String updateField, K updateValue) {
+
+        Bson filter = Filters.eq(filterField, filterValue);
+        Bson update = Updates.addToSet(updateField, updateValue);
+
         userCollection.updateOne(filter, update);
     }
+
 }
