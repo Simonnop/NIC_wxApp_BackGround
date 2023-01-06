@@ -34,7 +34,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testLoginByInput(){
+    public void testLoginByInput() {
 
         String data = "{\"password\":\"123456\",\"username\":\"test\"}";
 
@@ -46,7 +46,7 @@ public class TestLogin {
 
         UserService userService = new UserServiceImpl();
         Boolean correctLogin = userService.tryLogin(username, password);
-        JSONObject returnData = UserManager.getUserManager().getUserLoginInfo(username);
+        JSONObject returnData = UserManager.getUserManager().getUserLoginInfo("username", username);
 
         if (correctLogin) {
             result.put("code", 102);
@@ -62,7 +62,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testGetInfo(){
+    public void testGetInfo() {
         String username = "test1";
 
         Bson filter = Filters.eq("username", username);
@@ -90,7 +90,7 @@ public class TestLogin {
         data.put("identity", singleDocument.get("identity"));
         int levelCount = 1;
         for (Integer level :
-                singleDocument.getList("authorityLevel",Integer.class)) {
+                singleDocument.getList("authorityLevel", Integer.class)) {
             data.put("authority" + levelCount++, level);
         }
         data.put("missionTaken", singleDocument.get("missionTaken"));

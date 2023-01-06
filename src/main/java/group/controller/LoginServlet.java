@@ -81,7 +81,7 @@ public class LoginServlet extends HttpServlet {
         if (correctLogin) {
             result.put("code", 102);
             result.put("msg", "登录成功");
-            result.put("data", UserManager.getUserManager().getUserLoginInfo(username));
+            result.put("data", UserManager.getUserManager().getUserLoginInfo("username", username));
         } else {
             result.put("code", 101);
             result.put("msg", "密码错误");

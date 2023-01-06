@@ -11,8 +11,10 @@ import org.bson.Document;
 
 public class UserManager {
     private static final UserManager userManager = new UserManager();
+
     private UserManager() {
     }
+
     public static UserManager getUserManager() {
         return userManager;
     }
@@ -20,9 +22,23 @@ public class UserManager {
     final UserDao userDao = UserDaoImpl.getUserDao();
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
 
-    public JSONObject getUserLoginInfo(String username) {
+    public JSONObject getUserLoginInfo(String field, String value) {
 
-        Document userInfo = userDao.searchUserByInput("username", username);
+        JSONObject userAllInfo = getUserAllInfo(field, value);
+
+        userAllInfo.remove("_id");
+        userAllInfo.remove("authorityLevel");
+        userAllInfo.remove("QQ");
+        userAllInfo.remove("tel");
+        userAllInfo.remove("classStr");
+        userAllInfo.remove("password");
+
+        return userAllInfo;
+    }
+
+    public JSONObject getUserAllInfo(String field, String value) {
+
+        Document userInfo = userDao.searchUserByInput(field, value);
         if (userInfo == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
@@ -31,13 +47,6 @@ public class UserManager {
         for (Integer level : userInfo.getList("authorityLevel", Integer.class)) {
             userInfo.put("authority" + levelCount++, level);
         }
-
-        userInfo.remove("_id");
-        userInfo.remove("authorityLevel");
-        userInfo.remove("QQ");
-        userInfo.remove("tel");
-        userInfo.remove("classStr");
-        userInfo.remove("password");
 
         return (JSONObject) JSONObject.toJSON(userInfo);
     }
