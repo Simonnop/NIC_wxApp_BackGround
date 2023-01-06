@@ -69,19 +69,19 @@ public class LoginServlet extends HttpServlet {
         String data = req.getParameter("data");
         JSONObject dataJson = JSONObject.parseObject(data);
 
-        String username = (String) dataJson.get("username");
+        String userid = (String) dataJson.get("userid");
         String password = (String) dataJson.get("password");
-        if (username == null && password == null) {
+        if (userid == null && password == null) {
             throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
 
         UserService userService = new UserServiceImpl();
-        Boolean correctLogin = userService.tryLogin(username, password);
+        Boolean correctLogin = userService.tryLogin(userid, password);
 
         if (correctLogin) {
             result.put("code", 102);
             result.put("msg", "登录成功");
-            result.put("data", UserManager.getUserManager().getUserLoginInfo("username", username));
+            result.put("data", UserManager.getUserManager().getUserLoginInfo("userid", userid));
         } else {
             result.put("code", 101);
             result.put("msg", "密码错误");
@@ -102,7 +102,7 @@ public class LoginServlet extends HttpServlet {
         String data = req.getParameter("data");
         JSONObject dataJson = JSONObject.parseObject(data);
 
-        String username = (String) dataJson.get("username");
+        String username = (String) dataJson.get("userid");
 
         result.put("code", 102);
         result.put("msg", "登录成功");

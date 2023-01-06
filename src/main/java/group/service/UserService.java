@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserService {
 
-    Boolean tryLogin(String username, String password);
+    Boolean tryLogin(String userid, String password);
 
     JSONArray showAllMission();
 
@@ -15,7 +15,7 @@ public interface UserService {
 
     JSONArray showMissionById(String missionID);
 
-    void tryGetMission(String username, String missionID, String kind);
+    void tryGetMission(String userid, String missionID, String kind);
 
     void uploadFile(List<FileItem> fileItemList, String missionID,String uploadPath);
 

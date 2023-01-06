@@ -39,9 +39,9 @@ public class UserServiceImpl implements UserService {
     */
 
     @Override
-    public Boolean tryLogin(String username, String password) {
+    public Boolean tryLogin(String userid, String password) {
 
-        Document user = userDao.searchUserByInput("username", username);
+        Document user = userDao.searchUserByInput("userid", userid);
         if (user == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void tryGetMission(String username, String missionID, String kind) {
+    public void tryGetMission(String userid, String missionID, String kind) {
 
         // 不带事务写法: 不验证 username 响应时间更快
         boolean success = true;
@@ -116,10 +116,10 @@ public class UserServiceImpl implements UserService {
                 // 验证未参与
                 if (((ArrayList<?>) ((Document) document.get("reporters"))
                         .get(kind))
-                        .contains(username)) {
+                        .contains(userid)) {
                     throw new AppRuntimeException(ExceptionKind.ALREADY_PARTICIPATE);
                 }
-                missionDao.addToSetInMission("missionID", missionID, "reporters." + kind, username);
+                missionDao.addToSetInMission("missionID", missionID, "reporters." + kind, userid);
             }
         } catch (Exception e) {
             success = false;
@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService {
         } finally {
             if (success) {
                 new Thread(() -> userDao.addToSetInUser(
-                        "username", username, "missionTaken", missionID))
+                        "userid", userid, "missionTaken", missionID))
                         .start();
                 new Thread(() -> missionManager.updateMissionStatus(missionID)).start();
             }

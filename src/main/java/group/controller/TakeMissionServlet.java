@@ -66,15 +66,15 @@ public class TakeMissionServlet extends HttpServlet {
         String data = req.getParameter("data");
         JSONObject dataJson = JSONObject.parseObject(data);
 
-        String username = (String) dataJson.get("username");
+        String userid = (String) dataJson.get("userid");
         String missionID = (String) dataJson.get("missionID");
         String kind = (String) dataJson.get("kind");
-        if (username == null || missionID == null || kind == null) {
+        if (userid == null || missionID == null || kind == null) {
             throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
 
         UserService loginService = new UserServiceImpl();
-        loginService.tryGetMission(username, missionID, kind);
+        loginService.tryGetMission(userid, missionID, kind);
 
         result.put("code", 402);
         result.put("msg", "任务参加成功");
