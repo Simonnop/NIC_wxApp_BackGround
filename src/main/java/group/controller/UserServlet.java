@@ -64,9 +64,11 @@ public class UserServlet extends HttpServlet {
 
         String userid = (String) dataJson.get("userid");
 
+        UserServiceImpl userService = new UserServiceImpl();
+
         result.put("code", 602);
         result.put("msg", "查询用户信息成功");
-        result.put("data", UserManager.getUserManager().getUserAllInfo("userid",userid));
+        result.put("data", userService.showTakenMission("userid",userid));
 
         String resultStr = result.toJSONString();
         out.write(resultStr);

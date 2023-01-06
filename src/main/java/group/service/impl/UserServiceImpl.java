@@ -21,7 +21,9 @@ import org.apache.commons.fileupload.FileItem;
 import org.bson.Document;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
@@ -91,6 +93,29 @@ public class UserServiceImpl implements UserService {
         }
         return new JSONArray() {{
             addAll(missionManager.changeFormAndCalculate(documents));
+        }};
+    }
+
+    @Override
+    public JSONArray showTakenMission(String field, String value) {
+
+        ArrayList<Document> documentArrayList = new ArrayList<>();
+
+        Document userInfo = userDao.searchUserByInput(field, value);
+        if (userInfo == null) {
+            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        }
+        for (String missionID : userInfo.getList("missionTaken", String.class)) {
+            Document document = missionDao.searchMissionByInput("missionID", missionID).first();
+            if (((Document) document.get("status"))
+                    .get("写稿")
+                    .equals("未达成")) {
+                documentArrayList.add(missionManager.calculateLack(document));
+                System.out.println(missionID);
+            }
+        }
+        return new JSONArray() {{
+            addAll(documentArrayList);
         }};
     }
 
@@ -180,6 +205,9 @@ public class UserServiceImpl implements UserService {
                     try {
                         // 将文件名保存到对应的任务下
                         missionDao.addToSetInMission("missionID", missionID, "filePath", fileName);
+                        missionDao.updateInMission(
+                                "missionID", missionID,
+                                "status.写稿", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                     } catch (Exception e) {
                         storeFile.delete();
                         throw e;

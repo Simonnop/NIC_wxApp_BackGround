@@ -122,13 +122,15 @@ public class TestMission {
             UserServiceImpl userService = new UserServiceImpl();
 
             JSONArray jsonArray = new JSONArray();
-            jsonArray.addAll(userService.showAllMission());
+            jsonArray.addAll(userService.showTakenMission("userid","U202116999"));
+            //jsonArray.addAll(userService.showAllMission());
             result.put("data", jsonArray);
 
             result.put("code", 302);
             result.put("msg", "请求显示任务成功");
 
         } catch (Exception e) {
+            e.printStackTrace();
             result.put("code", 303);
             result.put("msg", "请求显示任务信息错误");
         } finally {
