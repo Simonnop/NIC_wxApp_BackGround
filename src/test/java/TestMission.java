@@ -59,7 +59,7 @@ public class TestMission {
                 "\"publisher\": \"test2\"," +
                 "\"element\": \"1\"," +
                 "\"description\": \"safsx\"," +
-                "\"time\": {\"year\": 1977,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
+                "\"time\": {\"year\": 1955,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
                 "\"reporterNeeds\": {\"photo\": 1,\"article\": 1}}";
 
         System.out.println(data);

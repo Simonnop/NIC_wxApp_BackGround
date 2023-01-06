@@ -19,6 +19,8 @@ public class Mission {
     Map<String,String> status;
     Map<String, Integer> reporterNeeds;
     Map<String, List<User>> reporters;
+    ArrayList<String> files;
+
 
     public Mission() {
         count++;
@@ -61,6 +63,7 @@ public class Mission {
         } else {
             missionID = getDataCode() + count;
         }
+        files = new ArrayList<>();
         // count累加
         count++;
         // 控制在两位数内
@@ -71,7 +74,6 @@ public class Mission {
 
     public Document changeToDocument()  {
         Document doc = new Document();
-
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field :
                 fields) {

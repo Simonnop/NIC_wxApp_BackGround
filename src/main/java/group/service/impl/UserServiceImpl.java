@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
                     }
                     try {
                         // 将文件名保存到对应的任务下
-                        missionDao.addToSetInMission("missionID", missionID, "filePath", fileName);
+                        missionDao.addToSetInMission("missionID", missionID, "files", fileName);
                         missionDao.updateInMission(
                                 "missionID", missionID,
                                 "status.写稿", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
