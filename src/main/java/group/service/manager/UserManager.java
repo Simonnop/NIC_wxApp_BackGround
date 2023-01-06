@@ -26,7 +26,6 @@ public class UserManager {
 
         JSONObject userAllInfo = getUserAllInfo(field, value);
 
-        userAllInfo.remove("_id");
         userAllInfo.remove("authorityLevel");
         userAllInfo.remove("QQ");
         userAllInfo.remove("tel");
@@ -42,11 +41,11 @@ public class UserManager {
         if (userInfo == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
-
         int levelCount = 1;
         for (Integer level : userInfo.getList("authorityLevel", Integer.class)) {
             userInfo.put("authority" + levelCount++, level);
         }
+        userInfo.remove("_id");
 
         return (JSONObject) JSONObject.toJSON(userInfo);
     }
