@@ -1,18 +1,11 @@
 package group.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.TransactionOptions;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
 import group.dao.MissionDao;
 import group.dao.UserDao;
 import group.dao.impl.MissionDaoImpl;
 import group.dao.impl.UserDaoImpl;
-import group.dao.util.DataBaseUtil;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.service.UserService;
@@ -43,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean tryLogin(String userid, String password) {
 
-        Document user = userDao.searchUserByInput("userid", userid);
+        Document user = userDao.searchUserByInputEqual("userid", userid);
         if (user == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
@@ -101,12 +94,15 @@ public class UserServiceImpl implements UserService {
 
         ArrayList<Document> documentArrayList = new ArrayList<>();
 
-        Document userInfo = userDao.searchUserByInput(field, value);
+        Document userInfo = userDao.searchUserByInputEqual(field, value);
         if (userInfo == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
         for (String missionID : userInfo.getList("missionTaken", String.class)) {
             Document document = missionDao.searchMissionByInput("missionID", missionID).first();
+            if (document == null) {
+                continue;
+            }
             if (((Document) document.get("status"))
                     .get("写稿")
                     .equals("未达成")) {
@@ -202,16 +198,23 @@ public class UserServiceImpl implements UserService {
                     } catch (Exception e) {
                         throw new AppRuntimeException(ExceptionKind.SAME_FILE_ERROR);
                     }
-                    try {
+                    new Thread(() -> {
                         // 将文件名保存到对应的任务下
-                        missionDao.addToSetInMission("missionID", missionID, "files", fileName);
+                        missionDao.addToSetInMission(
+                                "missionID", missionID,
+                                "files", fileName);
+                        // 任务写稿完成
                         missionDao.updateInMission(
                                 "missionID", missionID,
-                                "status.写稿", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-                    } catch (Exception e) {
-                        storeFile.delete();
-                        throw e;
-                    }
+                                "status.写稿",
+                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                        // 将 missionID 加入 user 的 missionCompleted 下
+                        userDao.addToSetInUser(
+                                "userid",
+                                userDao.searchUserByInputContain("missionTaken", missionID).get("userid"),
+                                "missionCompleted", missionID);
+                    }).start();
+
                 }
             }
         }

@@ -27,9 +27,17 @@ public class UserDaoImpl implements UserDao {
     MongoCollection<Document> userCollection = DataBaseUtil.getMongoDB().getCollection("User");
 
     @Override
-    public <T> Document searchUserByInput(String field, T value) {
+    public <T> Document searchUserByInputEqual(String field, T value) {
         // 指定查询过滤器
         Bson filter = Filters.eq(field, value);
+        // 根据查询过滤器查询
+        return userCollection.find(filter).first();
+    }
+
+    @Override
+    public <T> Document searchUserByInputContain(String field, T value) {
+        // 指定查询过滤器
+        Bson filter = Filters.elemMatch(field, Filters.eq(value));
         // 根据查询过滤器查询
         return userCollection.find(filter).first();
     }
