@@ -37,7 +37,7 @@ public class UserManager {
 
     public JSONObject getUserAllInfo(String field, String value) {
 
-        Document userInfo = userDao.searchUserByInputEqual(field, value);
+        Document userInfo = userDao.searchUserByInputEqual(field, value).first();
         if (userInfo == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }

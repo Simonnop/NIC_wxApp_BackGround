@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean tryLogin(String userid, String password) {
 
-        Document user = userDao.searchUserByInputEqual("userid", userid);
+        Document user = userDao.searchUserByInputEqual("userid", userid).first();
         if (user == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
         ArrayList<Document> documentArrayList = new ArrayList<>();
 
-        Document userInfo = userDao.searchUserByInputEqual(field, value);
+        Document userInfo = userDao.searchUserByInputEqual(field, value).first();
         if (userInfo == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
@@ -209,10 +209,11 @@ public class UserServiceImpl implements UserService {
                                 "status.写稿",
                                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                         // 将 missionID 加入 user 的 missionCompleted 下
-                        userDao.addToSetInUser(
-                                "userid",
-                                userDao.searchUserByInputContain("missionTaken", missionID).get("userid"),
-                                "missionCompleted", missionID);
+                        for (Document document : userDao.searchUserByInputContain("missionTaken", missionID)) {
+                            userDao.addToSetInUser(
+                                    "userid", document.get("userid"),
+                                    "missionCompleted", missionID);
+                        }
                     }).start();
 
                 }
