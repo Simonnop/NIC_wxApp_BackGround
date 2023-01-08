@@ -1,36 +1,26 @@
 # NIC_wxApp_BackGround
-
-## 2022/12/1
-
-### 需求
-
-
+华中科技大学管理学院NIC微信小程序后端
 
 ### 架构
-
-前端：wxApp，TDesign，Javascript
 
 后端：Java Servlet
 
 算法：Python
 
+通信: Socket
+
 数据库：MongoDB
 
 ### 长远目标
 
-后端：Java SSM
+后端：Java SSM 
 
 算法
 
 * 推荐相关已有稿件
-* 识别会议可能相关记者
-* 按偏好推送
+* 智能标定 tag
 
-通知推送
 
-### 本阶段计划
-
-各部分通信测试：登录功能实现
 
 
 
