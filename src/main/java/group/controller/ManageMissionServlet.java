@@ -7,7 +7,9 @@ import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.pojo.Mission;
 import group.service.ManagerService;
+import group.service.UserService;
 import group.service.impl.ManagerServiceImpl;
+import group.service.impl.UserServiceImpl;
 import org.apache.log4j.Logger;
 
 import javax.servlet.annotation.WebServlet;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 
 @WebServlet("/manage")
 public class ManageMissionServlet extends HttpServlet {
@@ -35,11 +38,8 @@ public class ManageMissionServlet extends HttpServlet {
                 case "alter":
                     alterMissionResponse(req, resp);
                     break;
-                case "delete":
-                    deleteMissionResponse(req, resp);
-                    break;
-                case "getFilePath":
-                    getMissionFilePathResponse(req, resp);
+                case "getTag":
+                    getTagResponse(req, resp);
                     break;
                 default:
                     throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
@@ -96,12 +96,29 @@ public class ManageMissionServlet extends HttpServlet {
 
     }
 
-    protected void deleteMissionResponse(HttpServletRequest req, HttpServletResponse resp) {
+    protected void getTagResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    }
+        Writer out = resp.getWriter();
+        JSONObject result = new JSONObject();
 
-    protected void getMissionFilePathResponse(HttpServletRequest req, HttpServletResponse resp) {
+        String firstTag = req.getParameter("firstTag");
+        UserService userService = new UserServiceImpl();
 
+        ArrayList<String> tags;
+        if (firstTag == null) {
+            tags = userService.showTag();
+        } else {
+            tags = userService.showTag(firstTag);
+        }
+
+        result.put("code", 202);
+        result.put("msg", "tag查询成功");
+        result.put("data", tags);
+
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
     }
 
     @Override

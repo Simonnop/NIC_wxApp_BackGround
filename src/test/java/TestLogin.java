@@ -36,17 +36,17 @@ public class TestLogin {
     @Test
     public void testLoginByInput() {
 
-        String data = "{\"password\":\"123456\",\"username\":\"test\"}";
+        String data = "{\"password\":\"123456\",\"userid\":\"U202116999\"}";
 
         JSONObject dataJson = JSONObject.parseObject(data);
         JSONObject result = new JSONObject();
 
-        String username = (String) dataJson.get("username");
+        String userid = (String) dataJson.get("userid");
         String password = (String) dataJson.get("password");
 
         UserService userService = new UserServiceImpl();
-        Boolean correctLogin = userService.tryLogin(username, password);
-        JSONObject returnData = UserManager.getUserManager().getUserLoginInfo("username", username);
+        Boolean correctLogin = userService.tryLogin(userid, password);
+        Document returnData = UserManager.getUserManager().getUserLoginInfo("userid", userid);
 
         if (correctLogin) {
             result.put("code", 102);

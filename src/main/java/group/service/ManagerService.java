@@ -1,13 +1,15 @@
 package group.service;
 
-import com.alibaba.fastjson.JSONArray;
 import group.pojo.Mission;
+import org.bson.Document;
+
+import java.util.ArrayList;
 
 public interface ManagerService {
 
     void addMission(Mission mission);
 
-    JSONArray showMissionGotDraft();
+    ArrayList<Document> showMissionGotDraft();
 
     void recommendMission(String missionID, String method);
 }

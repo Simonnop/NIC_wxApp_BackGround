@@ -1,6 +1,5 @@
 package group.service.manager;
 
-import com.alibaba.fastjson.JSONObject;
 import group.dao.MissionDao;
 import group.dao.UserDao;
 import group.dao.impl.MissionDaoImpl;
@@ -22,9 +21,9 @@ public class UserManager {
     final UserDao userDao = UserDaoImpl.getUserDao();
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
 
-    public JSONObject getUserLoginInfo(String field, String value) {
+    public Document getUserLoginInfo(String field, String value) {
 
-        JSONObject userAllInfo = getUserAllInfo(field, value);
+        Document userAllInfo = getUserAllInfo(field, value);
 
         userAllInfo.remove("authorityLevel");
         userAllInfo.remove("QQ");
@@ -35,7 +34,7 @@ public class UserManager {
         return userAllInfo;
     }
 
-    public JSONObject getUserAllInfo(String field, String value) {
+    public Document getUserAllInfo(String field, String value) {
 
         Document userInfo = userDao.searchUserByInputEqual(field, value).first();
         if (userInfo == null) {
@@ -47,6 +46,6 @@ public class UserManager {
         }
         userInfo.remove("_id");
 
-        return (JSONObject) JSONObject.toJSON(userInfo);
+        return userInfo;
     }
 }

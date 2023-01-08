@@ -67,7 +67,7 @@ public class UserServlet extends HttpServlet {
         UserServiceImpl userService = new UserServiceImpl();
 
         result.put("code", 602);
-        result.put("msg", "查询用户信息成功");
+        result.put("msg", "查询用户已接任务成功");
         result.put("data", userService.showTakenMission("userid",userid));
 
         String resultStr = result.toJSONString();

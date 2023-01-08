@@ -1,24 +1,27 @@
 package group.service;
 
-import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.fileupload.FileItem;
+import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface UserService {
 
     Boolean tryLogin(String userid, String password);
 
-    JSONArray showAllMission();
+    ArrayList<Document> showAllMission();
 
-    JSONArray showNeedMission();
+    ArrayList<Document> showNeedMission();
 
-    JSONArray showMissionById(String missionID);
+    ArrayList<Document> showMissionById(String missionID);
 
-    JSONArray showTakenMission(String field, String value);
+    ArrayList<Document> showTakenMission(String field, String value);
 
     void tryGetMission(String userid, String missionID, String kind);
 
     void uploadFile(List<FileItem> fileItemList, String missionID,String uploadPath);
+
+    ArrayList<String> showTag(String... str);
 
 }

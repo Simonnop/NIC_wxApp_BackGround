@@ -1,6 +1,5 @@
 package group.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.mongodb.client.FindIterable;
 import group.dao.MissionDao;
 import group.dao.impl.MissionDaoImpl;
@@ -27,7 +26,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public JSONArray showMissionGotDraft() {
+    public ArrayList<Document> showMissionGotDraft() {
 
         FindIterable<Document> documents = missionDao.showAll();
         if (documents.first() == null) {
@@ -40,9 +39,7 @@ public class ManagerServiceImpl implements ManagerService {
                 .get("status"))
                 .get("写稿")
                 .equals("未达成"));
-        return new JSONArray() {{
-            addAll(documentArrayList);
-        }};
+        return documentArrayList;
     }
 
     @Override

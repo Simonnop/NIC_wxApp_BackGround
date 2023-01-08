@@ -2,8 +2,10 @@ package group.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.mongodb.client.FindIterable;
+import group.dao.ConfigDao;
 import group.dao.MissionDao;
 import group.dao.UserDao;
+import group.dao.impl.ConfigDaoImpl;
 import group.dao.impl.MissionDaoImpl;
 import group.dao.impl.UserDaoImpl;
 import group.exception.AppRuntimeException;
@@ -23,7 +25,9 @@ public class UserServiceImpl implements UserService {
 
     final UserDao userDao = UserDaoImpl.getUserDao();
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
+    final ConfigDao configDao = ConfigDaoImpl.getConfigDaoImpl();
     final MissionManager missionManager = MissionManager.getMissionManager();
+
     /*
     MongoClient mongoClient = DataBaseUtil.getMongoClient();
     TransactionOptions txnOptions = TransactionOptions.builder()
@@ -44,19 +48,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public JSONArray showAllMission() {
+    public ArrayList<Document> showAllMission() {
 
         FindIterable<Document> documents = missionDao.showAll();
         if (documents.first() == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
-        return new JSONArray() {{
-            addAll(missionManager.changeFormAndCalculate(documents));
-        }};
+        return missionManager.changeFormAndCalculate(documents);
     }
 
     @Override
-    public JSONArray showNeedMission() {
+    public ArrayList<Document> showNeedMission() {
 
         ArrayList<Document> documentArrayList = new ArrayList<>();
 
@@ -72,25 +74,23 @@ public class UserServiceImpl implements UserService {
                 documentArrayList.add(document);
             }
         }
-        return new JSONArray() {{
-            addAll(documentArrayList);
-        }};
+        return documentArrayList;
+
     }
 
     @Override
-    public JSONArray showMissionById(String missionID) {
+    public ArrayList<Document> showMissionById(String missionID) {
 
         FindIterable<Document> documents = missionDao.searchMissionByInput("missionID", missionID);
         if (documents.first() == null) {
             throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
         }
-        return new JSONArray() {{
-            addAll(missionManager.changeFormAndCalculate(documents));
-        }};
+        return missionManager.changeFormAndCalculate(documents);
+
     }
 
     @Override
-    public JSONArray showTakenMission(String field, String value) {
+    public ArrayList<Document> showTakenMission(String field, String value) {
 
         ArrayList<Document> documentArrayList = new ArrayList<>();
 
@@ -110,9 +110,7 @@ public class UserServiceImpl implements UserService {
                 System.out.println(missionID);
             }
         }
-        return new JSONArray() {{
-            addAll(documentArrayList);
-        }};
+        return documentArrayList;
     }
 
     @Override
@@ -209,15 +207,25 @@ public class UserServiceImpl implements UserService {
                                 "status.写稿",
                                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                         // 将 missionID 加入 user 的 missionCompleted 下
-                        for (Document document : userDao.searchUserByInputContain("missionTaken", missionID)) {
+                        /*for (Document document : userDao.searchUserByInputContain("missionTaken", missionID)) {
                             userDao.addToSetInUser(
                                     "userid", document.get("userid"),
                                     "missionCompleted", missionID);
-                        }
+                        }*/
                     }).start();
 
                 }
             }
+        }
+    }
+
+    @Override
+    public ArrayList<String> showTag(String... str) {
+        Document document = configDao.showItemByInput("item", "tag").first();
+        if (str.length == 0) {
+            return (ArrayList<String>) document.getList("firstLayer", String.class);
+        } else {
+            return (ArrayList<String>) document.getList(str[0], String.class);
         }
     }
 }
