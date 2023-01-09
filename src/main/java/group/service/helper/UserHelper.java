@@ -1,4 +1,4 @@
-package group.service.manager;
+package group.service.helper;
 
 import group.dao.MissionDao;
 import group.dao.UserDao;
@@ -8,14 +8,14 @@ import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import org.bson.Document;
 
-public class UserManager {
-    private static final UserManager userManager = new UserManager();
+public class UserHelper {
+    private static final UserHelper userHelper = new UserHelper();
 
-    private UserManager() {
+    private UserHelper() {
     }
 
-    public static UserManager getUserManager() {
-        return userManager;
+    public static UserHelper getUserHelper() {
+        return userHelper;
     }
 
     final UserDao userDao = UserDaoImpl.getUserDao();

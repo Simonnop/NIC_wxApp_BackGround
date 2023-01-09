@@ -1,8 +1,6 @@
 import com.alibaba.fastjson.JSONObject;
 import group.service.UserService;
 import group.service.impl.UserServiceImpl;
-import group.service.manager.UserManager;
-import org.bson.Document;
 import org.junit.Test;
 
 import java.util.ArrayList;

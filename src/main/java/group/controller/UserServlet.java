@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import group.controller.util.LogPrinter;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
-import group.service.UserService;
 import group.service.impl.UserServiceImpl;
-import group.service.manager.UserManager;
 import org.apache.log4j.Logger;
 
 import javax.servlet.annotation.WebServlet;

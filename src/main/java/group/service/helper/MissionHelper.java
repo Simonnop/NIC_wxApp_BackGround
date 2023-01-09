@@ -1,24 +1,22 @@
-package group.service.manager;
+package group.service.helper;
 
 import com.mongodb.client.FindIterable;
 import group.dao.MissionDao;
 import group.dao.UserDao;
 import group.dao.impl.MissionDaoImpl;
 import group.dao.impl.UserDaoImpl;
-import group.exception.AppRuntimeException;
-import group.exception.ExceptionKind;
 import org.bson.Document;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MissionManager {
-    private static final MissionManager missionManager = new MissionManager();
-    private MissionManager() {
+public class MissionHelper {
+    private static final MissionHelper missionHelper = new MissionHelper();
+    private MissionHelper() {
     }
-    public static MissionManager getMissionManager() {
-        return missionManager;
+    public static MissionHelper getMissionHelper() {
+        return missionHelper;
     }
 
     final UserDao userDao = UserDaoImpl.getUserDao();

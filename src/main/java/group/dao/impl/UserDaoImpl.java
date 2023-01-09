@@ -41,9 +41,18 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public <T, K> void addToSetInUser(String filterField, T filterValue, String updateField, K updateValue) {
-
+        // 集合中插入
         Bson filter = Filters.eq(filterField, filterValue);
         Bson update = Updates.addToSet(updateField, updateValue);
+
+        userCollection.updateOne(filter, update);
+    }
+
+    @Override
+    public <T, K> void updateInUser(String filterField, T filterValue, String updateField, K updateValue) {
+        // 更新字段
+        Bson filter = Filters.eq(filterField, filterValue);
+        Bson update = Updates.set(updateField, updateValue);
 
         userCollection.updateOne(filter, update);
     }

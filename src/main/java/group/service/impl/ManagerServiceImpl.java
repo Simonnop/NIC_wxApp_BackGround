@@ -7,7 +7,7 @@ import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.pojo.Mission;
 import group.service.ManagerService;
-import group.service.manager.MissionManager;
+import group.service.helper.MissionHelper;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class ManagerServiceImpl implements ManagerService {
 
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
-    final MissionManager missionManager = MissionManager.getMissionManager();
+    final MissionHelper missionManager = MissionHelper.getMissionHelper();
 
     @Override
     public void addMission(Mission mission) {

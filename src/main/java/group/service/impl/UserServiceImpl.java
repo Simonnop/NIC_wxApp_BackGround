@@ -1,6 +1,5 @@
 package group.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.mongodb.client.FindIterable;
 import group.dao.ConfigDao;
 import group.dao.MissionDao;
@@ -11,7 +10,7 @@ import group.dao.impl.UserDaoImpl;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.service.UserService;
-import group.service.manager.MissionManager;
+import group.service.helper.MissionHelper;
 import org.apache.commons.fileupload.FileItem;
 import org.bson.Document;
 
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
     final UserDao userDao = UserDaoImpl.getUserDao();
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
     final ConfigDao configDao = ConfigDaoImpl.getConfigDaoImpl();
-    final MissionManager missionManager = MissionManager.getMissionManager();
+    final MissionHelper missionManager = MissionHelper.getMissionHelper();
 
     /*
     MongoClient mongoClient = DataBaseUtil.getMongoClient();

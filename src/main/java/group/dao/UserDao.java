@@ -11,4 +11,6 @@ public interface UserDao {
     <T> FindIterable<Document> searchUserByInputContain(String field, T value);
 
     <T, K> void addToSetInUser(String filterField, T filterValue, String updateField, K updateValue);
+
+    <T, K> void updateInUser(String filterField, T filterValue, String updateField, K updateValue);
 }

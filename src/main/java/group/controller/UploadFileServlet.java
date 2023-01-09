@@ -42,6 +42,7 @@ public class UploadFileServlet extends HttpServlet {
 
         try {
             String missionID = req.getParameter("missionID");
+            String userid = req.getParameter("userid");
             // 检测是否为多媒体上传
             if (!ServletFileUpload.isMultipartContent(req)|| missionID == null) {
                 System.out.println(missionID);
