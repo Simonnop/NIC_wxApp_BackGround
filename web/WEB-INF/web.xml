@@ -40,6 +40,10 @@
         <servlet-name>userServlet</servlet-name>
         <servlet-class>group.controller.UserServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>lessonServlet</servlet-name>
+        <servlet-class>group.controller.LessonServlet</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -65,6 +69,10 @@
     <servlet-mapping>
         <servlet-name>userServlet</servlet-name>
         <url-pattern>/user</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>lessonServlet</servlet-name>
+        <url-pattern>/lesson</url-pattern>
     </servlet-mapping>
 
 
