@@ -2,9 +2,11 @@ package group.service.impl;
 
 import com.mongodb.client.FindIterable;
 import group.dao.ConfigDao;
+import group.dao.LessonDao;
 import group.dao.MissionDao;
 import group.dao.UserDao;
 import group.dao.impl.ConfigDaoImpl;
+import group.dao.impl.LessonDaoImpl;
 import group.dao.impl.MissionDaoImpl;
 import group.dao.impl.UserDaoImpl;
 import group.exception.AppRuntimeException;
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
     final UserDao userDao = UserDaoImpl.getUserDao();
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
     final ConfigDao configDao = ConfigDaoImpl.getConfigDaoImpl();
+    final LessonDao lessonDao = LessonDaoImpl.getLessonDao();
     final MissionHelper missionManager = MissionHelper.getMissionHelper();
 
     /*
@@ -225,6 +228,26 @@ public class UserServiceImpl implements UserService {
             return (ArrayList<String>) document.getList("firstLayer", String.class);
         } else {
             return (ArrayList<String>) document.getList(str[0], String.class);
+        }
+    }
+
+    @Override
+    public ArrayList<Document> showLessons(String userid, Integer... week) {
+
+        ArrayList<Document> documents = lessonDao.showLessonsByInput("userid", userid);
+
+        if (week[0] == null) {
+            return documents;
+        } else if (week[1] == null) {
+            return new ArrayList<Document>() {{
+                add(documents.get(week[0] - 1));
+            }};
+        } else {
+            return new ArrayList<Document>() {{
+                for (int i = week[0]; i < week[1] + 1; i++) {
+                    add(documents.get(i - 1));
+                }
+            }};
         }
     }
 }

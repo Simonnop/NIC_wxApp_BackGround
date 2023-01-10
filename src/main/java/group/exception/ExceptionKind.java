@@ -6,6 +6,7 @@ public enum ExceptionKind {
     REQUEST_INFO_ERROR(103, "请求信息错误"),
     ENOUGH_PEOPLE(401, "需要人数已满"),
     ALREADY_PARTICIPATE(403,"任务已接"),
+    SOCKET_CONNECTION_ERROR(703,"与Socket通信异常"),
     SAME_FILE_ERROR(501,"已含同名文件");
 
 

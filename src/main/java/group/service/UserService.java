@@ -24,4 +24,6 @@ public interface UserService {
 
     ArrayList<String> showTag(String... str);
 
+    ArrayList<Document> showLessons(String userid,Integer... week);
+
 }

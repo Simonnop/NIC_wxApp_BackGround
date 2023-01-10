@@ -1,5 +1,10 @@
 package group.service.helper;
 
+import group.dao.LessonDao;
+import group.dao.impl.LessonDaoImpl;
+import group.exception.AppRuntimeException;
+import group.exception.ExceptionKind;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -13,6 +18,8 @@ public class SocketHelper {
     public static SocketHelper getSocketHelper() {
         return socketHelper;
     }
+
+    final LessonDaoImpl lessonDao = LessonDaoImpl.getLessonDao();
 
     public String getUserLesson(String userid, String password) {
         String ip = "localhost";        // 设置发送地址和端口号
@@ -44,8 +51,10 @@ public class SocketHelper {
             System.out.println(result);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new AppRuntimeException(ExceptionKind.SOCKET_CONNECTION_ERROR);
         }
+
+        lessonDao.addLessonInfo(userid, result);
 
         return result;
     }

@@ -9,6 +9,7 @@ import group.service.helper.SocketHelper;
 import group.service.helper.UserHelper;
 import group.service.impl.UserServiceImpl;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 
 public class LessonServlet extends HttpServlet {
 
@@ -28,6 +30,9 @@ public class LessonServlet extends HttpServlet {
         try {
             String method = req.getParameter("method");
             switch (method) {
+                case "add":
+                    addLessonResponse(req, resp);
+                    break;
                 case "get":
                     getLessonResponse(req, resp);
                     break;
@@ -55,7 +60,35 @@ public class LessonServlet extends HttpServlet {
         }
     }
 
-    protected void getLessonResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void getLessonResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+        Writer out = resp.getWriter();
+        JSONObject result = new JSONObject();
+
+        String data = req.getParameter("data");
+        JSONObject dataJson = JSONObject.parseObject(data);
+
+        String userid = (String) dataJson.get("userid");
+        Integer weekStart = (Integer) dataJson.get("weekStart");
+        Integer weekEnd = (Integer) dataJson.get("weekEnd");
+        if (userid == null) {
+            throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
+        }
+        UserService userService = new UserServiceImpl();
+
+        ArrayList<Document> lessons = userService.showLessons(userid, weekStart, weekEnd);
+
+        result.put("code", 702);
+        result.put("msg", "课表查询成功");
+        result.put("data", lessons);
+
+        String resultStr = result.toJSONString();
+        out.write(resultStr);
+        out.flush();
+        System.out.println(resultStr);
+    }
+
+    protected void addLessonResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         Writer out = resp.getWriter();
         JSONObject result = new JSONObject();
@@ -80,7 +113,7 @@ public class LessonServlet extends HttpServlet {
 
         result.put("code", 102);
         result.put("msg", "课表爬取成功");
-        result.put("data", lesson);
+        // result.put("data", lesson);
 
         String resultStr = result.toJSONString();
         out.write(resultStr);
