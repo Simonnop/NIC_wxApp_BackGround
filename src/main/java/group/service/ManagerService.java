@@ -11,5 +11,7 @@ public interface ManagerService {
 
     ArrayList<Document> showMissionGotDraft();
 
+    ArrayList<String> findAvailableReporters(String missionID, Integer... intervals);
+
     void recommendMission(String missionID, String method);
 }

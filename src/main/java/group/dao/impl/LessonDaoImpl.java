@@ -1,6 +1,7 @@
 package group.dao.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import group.dao.LessonDao;
@@ -41,5 +42,10 @@ public class LessonDaoImpl implements LessonDao {
         }
 
         return (ArrayList<Document>) document.getList("lessons", Document.class);
+    }
+
+    @Override
+    public FindIterable<Document> showAll() {
+        return lessonDocument.find();
     }
 }
