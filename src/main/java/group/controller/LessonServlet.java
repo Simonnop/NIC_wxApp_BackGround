@@ -120,8 +120,6 @@ public class LessonServlet extends HttpServlet {
                 break;
             }
         }
-
-
         // result.put("data", lesson);
 
         String resultStr = result.toJSONString();

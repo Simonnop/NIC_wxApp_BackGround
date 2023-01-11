@@ -53,7 +53,7 @@ public class UploadFileServlet extends HttpServlet {
             List<FileItem> formItems = upload.parseRequest(req);
             // 交给 service 层处理
             UserServiceImpl userService = new UserServiceImpl();
-            userService.uploadFile(formItems, missionID, uploadPath);
+            userService.uploadFile(formItems, missionID, userid, uploadPath);
 
             result.put("code", 502);
             result.put("msg", "文件上传成功");

@@ -1,5 +1,7 @@
 package group.pojo;
 
+import group.dao.UserDao;
+import group.dao.impl.UserDaoImpl;
 import org.bson.Document;
 
 import java.lang.reflect.Field;
@@ -16,7 +18,8 @@ public class Mission {
     String title;
     String publisher;
     String description;
-    Map<String,String> status;
+    Map<String, String> status;
+    Map<String, String> statusChanger;
     Map<String, Integer> reporterNeeds;
     Map<String, List<User>> reporters;
     ArrayList<String> files;
@@ -36,8 +39,8 @@ public class Mission {
         initializeMission();
     }
 
-    public void initializeMission(){
-        this.status = new HashMap<String, String>(){{
+    public void initializeMission() {
+        this.status = new HashMap<String, String>() {{
             put("发布任务", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             System.out.println(element);
             if (element == 0) {
@@ -51,6 +54,16 @@ public class Mission {
             }
             put("辅导员审核", "未达成");
             put("排版", "未达成");
+        }};
+        this.statusChanger = new HashMap<String, String>() {{
+            put("发布任务", (String) UserDaoImpl.getUserDao()
+                    .searchUserByInputEqual("userid",publisher)
+                    .first()
+                    .get("username"));
+            put("写稿", null);
+            put("编辑部审稿", null);
+            put("辅导员审核", null);
+            put("排版", null);
         }};
         reporters = new HashMap<>();
         for (String str : reporterNeeds.keySet()
@@ -72,7 +85,7 @@ public class Mission {
         }
     }
 
-    public Document changeToDocument()  {
+    public Document changeToDocument() {
         Document doc = new Document();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field :
@@ -84,6 +97,7 @@ public class Mission {
                 throw new RuntimeException(e);
             }
             doc.remove("count");
+            doc.remove("publisher");
         }
 
         return doc;
@@ -192,14 +206,14 @@ public class Mission {
     @Override
     public String toString() {
         return "Mission{" +
-                "missionID='" + missionID + '\'' +
-                ", time=" + time.toString() +
-                ", place='" + place + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", reporterNeeds=" + reporterNeeds +
-                ", reporters=" + reporters +
-                '}';
+               "missionID='" + missionID + '\'' +
+               ", time=" + time.toString() +
+               ", place='" + place + '\'' +
+               ", title='" + title + '\'' +
+               ", description='" + description + '\'' +
+               ", status=" + status +
+               ", reporterNeeds=" + reporterNeeds +
+               ", reporters=" + reporters +
+               '}';
     }
 }

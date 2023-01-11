@@ -179,7 +179,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void uploadFile(List<FileItem> formItems, String missionID, String uploadPath) {
+    public void uploadFile(List<FileItem> formItems, String missionID, String userid,String uploadPath) {
         // 如果目录不存在则创建
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
@@ -209,6 +209,13 @@ public class UserServiceImpl implements UserService {
                                 "missionID", missionID,
                                 "status.写稿",
                                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                        // 存储更改者姓名
+                        missionDao.updateInMission(
+                                "missionID", missionID,
+                                "statusChanger.写稿",
+                                userDao.searchUserByInputEqual("userid",userid)
+                                        .first()
+                                        .get("username"));
                         // 将 missionID 加入 user 的 missionCompleted 下
                         /*for (Document document : userDao.searchUserByInputContain("missionTaken", missionID)) {
                             userDao.addToSetInUser(
@@ -216,7 +223,6 @@ public class UserServiceImpl implements UserService {
                                     "missionCompleted", missionID);
                         }*/
                     }).start();
-
                 }
             }
         }

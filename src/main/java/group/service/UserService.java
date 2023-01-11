@@ -20,10 +20,10 @@ public interface UserService {
 
     void tryGetMission(String userid, String missionID, String kind);
 
-    void uploadFile(List<FileItem> fileItemList, String missionID,String uploadPath);
+    void uploadFile(List<FileItem> fileItemList, String missionID, String userid, String uploadPath);
 
     ArrayList<String> showTag(String... str);
 
-    ArrayList<Document> showLessons(String userid,Integer... week);
+    ArrayList<Document> showLessons(String userid, Integer... week);
 
 }

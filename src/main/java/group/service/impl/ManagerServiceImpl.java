@@ -97,32 +97,25 @@ public class ManagerServiceImpl implements ManagerService {
             }
             // 遍历所有的课
             for (Document lessons : lessonOfDay) {
+                // 获取课程是第几节
                 String[] times = ((String) lessons.get("time")).split("-");
                 for (int i = Integer.parseInt(times[0]); i <= Integer.parseInt(times[1]); i++) {
-
-                    System.out.println(lessons);
+                    // 从时间表拿对应课的时间
                     Document singleLesson = timetable.getList(season, Document.class).get(i - 1);
-
-                    int[] classStartTime = new int[2];
-                    String[] startTimes = singleLesson.get("startTime", String.class).split(":");
-                    for (int j = 0; j < startTimes.length; j++) {
-                        classStartTime[j] = Integer.parseInt(startTimes[j]);
-                    }
-
-                    int[] classEndTime = new int[2];
-                    String[] endTimes = singleLesson.get("endTime", String.class).split(":");
-                    for (int j = 0; j < endTimes.length; j++) {
-                        classEndTime[j] = Integer.parseInt(endTimes[j]);
-                    }
-
+                    // 获取开始时间(时+分)
+                    int[] classStartTime = TimeUtil.changeTimeToInts(
+                            singleLesson.get("startTime", String.class));
+                    // 获取结束时间(时+分)
+                    int[] classEndTime = TimeUtil.changeTimeToInts(
+                            singleLesson.get("endTime", String.class));
+                    // 判断与任务时间是否冲突
                     boolean checkAvailable = TimeUtil.checkAvailable(
                             new int[]{time.get("beginHour"), time.get("beginMinute")},
                             new int[]{time.get("endHour"), time.get("endMinute")},
                             classStartTime, classEndTime
                     );
-
+                    // 冲突,则换下一个人
                     if (!checkAvailable) {
-                        System.out.println("next");
                         continue loop;
                     }
                 }
