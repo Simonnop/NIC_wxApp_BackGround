@@ -13,6 +13,7 @@ import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.service.UserService;
 import group.service.helper.MissionHelper;
+import group.service.util.TimeUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.bson.Document;
 
@@ -236,18 +237,9 @@ public class UserServiceImpl implements UserService {
 
         ArrayList<Document> documents = lessonDao.showLessonsByInput("userid", userid);
 
-        if (week[0] == null) {
-            return documents;
-        } else if (week[1] == null) {
-            return new ArrayList<Document>() {{
-                add(documents.get(week[0] - 1));
-            }};
-        } else {
-            return new ArrayList<Document>() {{
-                for (int i = week[0]; i < week[1] + 1; i++) {
-                    add(documents.get(i - 1));
-                }
-            }};
+        for (Document document : documents) {
+            document.put("season", TimeUtil.getSeason((Integer) document.get("week")));
         }
+        return documents;
     }
 }

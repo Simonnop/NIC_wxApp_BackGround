@@ -69,14 +69,14 @@ public class LessonServlet extends HttpServlet {
         JSONObject dataJson = JSONObject.parseObject(data);
 
         String userid = (String) dataJson.get("userid");
-        Integer weekStart = (Integer) dataJson.get("weekStart");
-        Integer weekEnd = (Integer) dataJson.get("weekEnd");
+        //Integer weekStart = (Integer) dataJson.get("weekStart");
+        //Integer weekEnd = (Integer) dataJson.get("weekEnd");
         if (userid == null) {
             throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
         UserService userService = new UserServiceImpl();
 
-        ArrayList<Document> lessons = userService.showLessons(userid, weekStart, weekEnd);
+        ArrayList<Document> lessons = userService.showLessons(userid);
 
         result.put("code", 702);
         result.put("msg", "课表查询成功");
@@ -102,17 +102,26 @@ public class LessonServlet extends HttpServlet {
             throw new AppRuntimeException(ExceptionKind.REQUEST_INFO_ERROR);
         }
 
+        result.put("code", 702);
+        result.put("msg", "课表爬取成功");
+
         String lesson = null;
+        int count = 0;
         for (; ; ) {
+            if (count == 3) {
+                result.put("code", 703);
+                result.put("msg", "课表爬取失败");
+                break;
+            }
             if (lesson == null) {
                 lesson = SocketHelper.getSocketHelper().getUserLesson(userid, password);
+                count++;
             } else {
                 break;
             }
         }
 
-        result.put("code", 102);
-        result.put("msg", "课表爬取成功");
+
         // result.put("data", lesson);
 
         String resultStr = result.toJSONString();

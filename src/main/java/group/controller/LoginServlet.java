@@ -7,6 +7,7 @@ import group.exception.ExceptionKind;
 import group.service.UserService;
 import group.service.helper.UserHelper;
 import group.service.impl.UserServiceImpl;
+import group.service.util.TimeUtil;
 import org.apache.log4j.Logger;
 
 import javax.servlet.annotation.WebServlet;
@@ -82,6 +83,7 @@ public class LoginServlet extends HttpServlet {
             result.put("code", 102);
             result.put("msg", "登录成功");
             result.put("data", UserHelper.getUserHelper().getUserLoginInfo("userid", userid));
+            result.put("time", TimeUtil.getCurrentWeekInfo());
         } else {
             result.put("code", 101);
             result.put("msg", "密码错误");

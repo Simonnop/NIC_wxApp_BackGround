@@ -36,9 +36,9 @@ public class LessonDaoImpl implements LessonDao {
     @Override
     public <T> ArrayList<Document> showLessonsByInput(String field, T value) {
 
-        Document document = lessonDocument.find(Filters.eq("userid", "U202111390")).first();
+        Document document = lessonDocument.find(Filters.eq(field, value)).first();
         if (document == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+            throw new AppRuntimeException(ExceptionKind.NO_LESSONS_INFO);
         }
 
         return (ArrayList<Document>) document.getList("lessons", Document.class);

@@ -1,13 +1,9 @@
 package group.service.util;
 
-import group.dao.ConfigDao;
-import group.dao.LessonDao;
+import com.alibaba.fastjson.JSONObject;
 import group.dao.impl.ConfigDaoImpl;
-import group.dao.impl.LessonDaoImpl;
 import org.bson.Document;
 
-import java.net.Inet4Address;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TimeUtil {
@@ -107,5 +103,19 @@ public class TimeUtil {
         }
     }
 
+    public static JSONObject getCurrentWeekInfo() {
+
+        Integer[] weekDayByTime = TimeUtil.getWeekDayByTime(new HashMap<String, Integer>() {{
+            Calendar calendar = Calendar.getInstance();
+            put("year", calendar.get(Calendar.YEAR));
+            put("month", calendar.get(Calendar.MONTH)+1);
+            put("day", calendar.get(Calendar.DATE));
+        }});
+
+        return new JSONObject() {{
+            put("week", weekDayByTime[0]);
+            put("weekDay", weekDayByTime[1]);
+        }};
+    }
 
 }

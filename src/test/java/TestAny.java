@@ -8,7 +8,6 @@ import group.service.util.TimeUtil;
 import org.bson.Document;
 import org.junit.Test;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TestAny {
@@ -90,18 +89,9 @@ public class TestAny {
     @Test
     public void testDay() {
 
-        ConfigDaoImpl configDaoImpl = ConfigDaoImpl.getConfigDaoImpl();
+        System.out.println(TimeUtil.getCurrentWeekInfo());
 
-        Document document = configDaoImpl.showItemByInput("item", "timetable").first();
 
-        Document firstDay = (Document) document.get("firstDay");
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(
-                (Integer) firstDay.get("year"),
-                (Integer) firstDay.get("month") - 1,
-                (Integer) firstDay.get("day"));
-
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS").format(calendar.getTime()));
     }
 }
