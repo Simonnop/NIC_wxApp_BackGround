@@ -54,11 +54,11 @@ public class TestMission {
     @Test
     public void testReceiveMission() {
         JSONObject result = new JSONObject();
-        String data = "{\"place\": \"sda\"," +
-                "\"title\": \"fdsf\"," +
-                "\"publisher\": \"test2\"," +
+        String data = "{\"place\": \"这里\"," +
+                "\"title\": \"测试新字段\"," +
+                "\"publisher\": \"U202116999\"," +
                 "\"element\": \"1\"," +
-                "\"description\": \"safsx\"," +
+                "\"description\": \"如题\"," +
                 "\"time\": {\"year\": 1955,\"month\": 12,\"day\": 12,\"beginHour\": 12,\"beginMinute\": 0,\"endHour\": 13,\"endMinute\": 0}," +
                 "\"reporterNeeds\": {\"photo\": 1,\"article\": 1}}";
 

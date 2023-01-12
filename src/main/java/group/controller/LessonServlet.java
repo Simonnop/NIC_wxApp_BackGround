@@ -108,7 +108,7 @@ public class LessonServlet extends HttpServlet {
         String lesson = null;
         int count = 0;
         for (; ; ) {
-            if (count == 3) {
+            if (count == 5) {
                 result.put("code", 703);
                 result.put("msg", "课表爬取失败");
                 break;
