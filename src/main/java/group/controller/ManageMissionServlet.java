@@ -76,11 +76,8 @@ public class ManageMissionServlet extends HttpServlet {
         JSONObject dataJson = JSONObject.parseObject(data);
         int missionElement = (int) dataJson.get("element");
 
-        Mission mission = JSONObject.parseObject(data, Mission.class);
-        mission.setElement(missionElement);
-
         ManagerService managerService = new ManagerServiceImpl();
-        managerService.addMission(mission);
+        managerService.addMission(dataJson);
 
         result.put("code", 202);
         result.put("msg", "任务添加成功");

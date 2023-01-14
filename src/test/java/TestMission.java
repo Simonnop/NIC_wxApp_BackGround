@@ -65,11 +65,12 @@ public class TestMission {
         System.out.println(data);
 
         try {
-            Mission mission = JSONObject.parseObject(data, Mission.class);
+            JSONObject dataJson = JSONObject.parseObject(data);
+            dataJson.put("peopleNeeds", dataJson.get("reporterNeeds"));
 
-            ManagerService managerService = new ManagerServiceImpl();
+            ManagerServiceImpl managerService = new ManagerServiceImpl();
 
-            managerService.addMission(mission);
+            managerService.addMission(dataJson);
 
             result.put("code", 202);
             result.put("msg", "任务添加成功");

@@ -1,22 +1,28 @@
 package group.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.FindIterable;
 import group.dao.LessonDao;
 import group.dao.MissionDao;
 import group.dao.impl.ConfigDaoImpl;
 import group.dao.impl.LessonDaoImpl;
 import group.dao.impl.MissionDaoImpl;
+import group.dao.impl.WorkDaoImpl;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
-import group.pojo.Mission;
+import group.pojo.WorkFlow;
+import group.pojo.part.EnlistPart;
+import group.pojo.part.MissionPart;
+import group.pojo.part.SubmitPart;
+import group.pojo.util.DocUtil;
 import group.service.ManagerService;
 import group.service.helper.MissionHelper;
 import group.service.util.TimeUtil;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ManagerServiceImpl implements ManagerService {
 
@@ -24,13 +30,73 @@ public class ManagerServiceImpl implements ManagerService {
     final LessonDao lessonDao = LessonDaoImpl.getLessonDao();
     final ConfigDaoImpl configDao = ConfigDaoImpl.getConfigDaoImpl();
     final MissionHelper missionManager = MissionHelper.getMissionHelper();
+    final WorkDaoImpl workDao = WorkDaoImpl.getWorkDaoImpl();
 
     @Override
-    public void addMission(Mission mission) {
-        // 初始化任务id与状态
-        mission.initializeMission();
+    public void addMission(JSONObject jsonObject) {
+
         // 添加任务
-        missionDao.addMission(mission);
+        WorkFlow workFlow = new WorkFlow();
+        workFlow.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        workFlow.setMissionID("123456");
+        workFlow.setProgressIndex(1);
+        workFlow.setParts(new ArrayList<>());
+
+        MissionPart missionPart = JSON.parseObject(String.valueOf(jsonObject), MissionPart.class);
+        missionPart.setMissionID(workFlow.getMissionID());
+        missionPart.setIndex(0);
+
+        /*MissionPart missionPart = new MissionPart();
+        missionPart.setMissionID(workFlow.getMissionID());
+        missionPart.setIndex(1);
+        missionPart.setTime(JSONObject.parseObject(
+                jsonObject.getString("time"),
+                new TypeReference<Map<String, Integer>>(){}
+        ));
+        missionPart.setPeopleNeeds(JSONObject.parseObject(
+                jsonObject.getString("reporterNeeds"),
+                new TypeReference<Map<String, Integer>>(){}
+        ));
+        missionPart.setPlace("place");
+        missionPart.setDescription("dis");*/
+
+        workFlow.getParts().add(DocUtil.obj2Doc(missionPart));
+
+        EnlistPart enlistPart = new EnlistPart();
+        enlistPart.setAccordingPartIndex(0);
+        enlistPart.setPeopleNeeds(
+                DocUtil.doc2Obj(workFlow.getParts()
+                                .get(enlistPart.getAccordingPartIndex()), MissionPart.class)
+                                .getPeopleNeeds()
+        );
+        enlistPart.setIndex(1);
+        enlistPart.setPeopleGet(new HashMap<>());
+        enlistPart.setDescription("来人");
+        enlistPart.setPeopleGet(new HashMap<String,List<String>>(){{
+            put("photo", new ArrayList<String>() {{
+                add("U202111390");
+            }});
+        }});
+
+        workFlow.getParts().add(DocUtil.obj2Doc(enlistPart));
+
+        SubmitPart submitPart = new SubmitPart();
+        submitPart.setIndex(2);
+        submitPart.setAccordingPartIndex(1);
+        submitPart.setAccessiblePeople(new ArrayList<String>(){{
+            Map<String, List<String>> peopleGet = DocUtil.doc2Obj(workFlow.getParts()
+                            .get(submitPart.getAccordingPartIndex()), EnlistPart.class)
+                            .getPeopleGet();
+            for (String key : peopleGet.keySet()
+            ) {
+                addAll(peopleGet.get(key));
+            }
+        }});
+
+        workFlow.getParts().add(DocUtil.obj2Doc(submitPart));
+
+        System.out.println(workFlow);
+
     }
 
     @Override
@@ -53,12 +119,12 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public void recommendMission(String missionID, String method) {
         /*
-        * TODO
-        *  根据 tags 和 用户画像 的 拟合程度 推送
-        *  根据 课表情况 推送
-        *  采用 socket 与 python 通信
-        *
-        * */
+         * TODO
+         *  根据 tags 和 用户画像 的 拟合程度 推送
+         *  根据 课表情况 推送
+         *  采用 socket 与 python 通信
+         *
+         * */
 
     }
 
