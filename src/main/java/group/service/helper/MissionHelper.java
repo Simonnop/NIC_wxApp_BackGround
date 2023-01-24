@@ -3,8 +3,12 @@ package group.service.helper;
 import com.mongodb.client.FindIterable;
 import group.dao.MissionDao;
 import group.dao.UserDao;
+import group.dao.WorkDao;
 import group.dao.impl.MissionDaoImpl;
 import group.dao.impl.UserDaoImpl;
+import group.dao.impl.WorkDaoImpl;
+import group.pojo.WorkFlow;
+import group.pojo.util.DocUtil;
 import org.bson.Document;
 
 import java.text.SimpleDateFormat;
@@ -21,22 +25,17 @@ public class MissionHelper {
 
     final UserDao userDao = UserDaoImpl.getUserDao();
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
+    final WorkDaoImpl workDao = WorkDaoImpl.getWorkDaoImpl();
 
     public void updateMissionStatus(String missionID) {
 
-        Document document = missionDao.searchMissionByInput("missionID", missionID).first();
-        for (String kind : ((Document) calculateLack(document).get("reporterNeeds")).keySet()
-        ) {
-            if (!((Document) document.get("reporterLack"))
-                    .get(kind)
-                    .equals(0)) {
-                return;
-            }
-        }
+        Document document = workDao.searchMissionByInput("missionID", missionID).first();
+        WorkFlow workFlow = DocUtil.doc2Obj(document, WorkFlow.class);
+        workFlow.checkProgress();
 
-        missionDao.updateInMission(
+        workDao.replaceMission(
                 "missionID", missionID,
-                "status.接稿", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                DocUtil.obj2Doc(workFlow));
         System.out.println("updated");
     }
 
@@ -56,8 +55,8 @@ public class MissionHelper {
 
         document.remove("_id");
         // 计算还缺少的人数
-        Document reporterNeeds = (Document) document.get("reporterNeeds");
-        Document reporters = (Document) document.get("reporters");
+        Document reporterNeeds = (Document) document.get("peopleNeeds");
+        Document reporters = (Document) document.get("peopleGet");
         Document reporterLack = new Document();
 
         for (String str : reporterNeeds.keySet()
@@ -65,7 +64,7 @@ public class MissionHelper {
             reporterLack.put(str, (Integer) reporterNeeds.get(str)
                     - reporters.getList(str, String.class).size());
         }
-        document.put("reporterLack", reporterLack);
+        document.put("peopleLack", reporterLack);
 
         return document;
     }

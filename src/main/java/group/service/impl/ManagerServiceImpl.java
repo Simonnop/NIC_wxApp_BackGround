@@ -12,9 +12,7 @@ import group.dao.impl.WorkDaoImpl;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
 import group.pojo.WorkFlow;
-import group.pojo.part.EnlistPart;
-import group.pojo.part.MissionPart;
-import group.pojo.part.SubmitPart;
+import group.pojo.part.*;
 import group.pojo.util.DocUtil;
 import group.service.ManagerService;
 import group.service.helper.MissionHelper;
@@ -31,88 +29,50 @@ public class ManagerServiceImpl implements ManagerService {
     final ConfigDaoImpl configDao = ConfigDaoImpl.getConfigDaoImpl();
     final MissionHelper missionManager = MissionHelper.getMissionHelper();
     final WorkDaoImpl workDao = WorkDaoImpl.getWorkDaoImpl();
+    final MissionHelper missionHelper = MissionHelper.getMissionHelper();
 
     @Override
     public void addMission(JSONObject jsonObject) {
 
         // 添加任务
         WorkFlow workFlow = new WorkFlow();
-        workFlow.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        workFlow.setMissionID("123456");
-        workFlow.setProgressIndex(1);
-        workFlow.setParts(new ArrayList<>());
 
-        MissionPart missionPart = JSON.parseObject(String.valueOf(jsonObject), MissionPart.class);
-        missionPart.setMissionID(workFlow.getMissionID());
-        missionPart.setIndex(0);
-
-        /*MissionPart missionPart = new MissionPart();
-        missionPart.setMissionID(workFlow.getMissionID());
-        missionPart.setIndex(1);
-        missionPart.setTime(JSONObject.parseObject(
-                jsonObject.getString("time"),
-                new TypeReference<Map<String, Integer>>(){}
-        ));
-        missionPart.setPeopleNeeds(JSONObject.parseObject(
-                jsonObject.getString("reporterNeeds"),
-                new TypeReference<Map<String, Integer>>(){}
-        ));
-        missionPart.setPlace("place");
-        missionPart.setDescription("dis");*/
-
-        workFlow.getParts().add(DocUtil.obj2Doc(missionPart));
+        WorkPart workPart = new MissionPart().initPart(workFlow, jsonObject);
+        workFlow.insertWorkPart(workPart);
 
         EnlistPart enlistPart = new EnlistPart();
         enlistPart.setAccordingPartIndex(0);
-        enlistPart.setPeopleNeeds(
-                DocUtil.doc2Obj(workFlow.getParts()
-                                .get(enlistPart.getAccordingPartIndex()), MissionPart.class)
-                                .getPeopleNeeds()
-        );
-        enlistPart.setIndex(1);
-        enlistPart.setPeopleGet(new HashMap<>());
         enlistPart.setDescription("来人");
-        enlistPart.setPeopleGet(new HashMap<String,List<String>>(){{
-            put("photo", new ArrayList<String>() {{
-                add("U202111390");
-            }});
-        }});
-
-        workFlow.getParts().add(DocUtil.obj2Doc(enlistPart));
+        workFlow.insertWorkPart(enlistPart.initPart(workFlow,null));
 
         SubmitPart submitPart = new SubmitPart();
-        submitPart.setIndex(2);
         submitPart.setAccordingPartIndex(1);
-        submitPart.setAccessiblePeople(new ArrayList<String>(){{
-            Map<String, List<String>> peopleGet = DocUtil.doc2Obj(workFlow.getParts()
-                            .get(submitPart.getAccordingPartIndex()), EnlistPart.class)
-                            .getPeopleGet();
-            for (String key : peopleGet.keySet()
-            ) {
-                addAll(peopleGet.get(key));
-            }
-        }});
+        workFlow.insertWorkPart(submitPart.initPart(workFlow, null));
 
-        workFlow.getParts().add(DocUtil.obj2Doc(submitPart));
+        ExaminePart examinePart = new ExaminePart();
+        examinePart.setAccordingPartIndex(2);
+        workFlow.insertWorkPart(examinePart.initPart(workFlow, null));
 
-        System.out.println(workFlow);
-
+        workFlow.checkProgress();
+        workDao.addWorkFlow(workFlow);
     }
 
     @Override
     public ArrayList<Document> showMissionGotDraft() {
 
-        FindIterable<Document> documents = missionDao.showAll();
-        if (documents.first() == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
+        FindIterable<Document> documents = workDao.showAll();
+        ArrayList<Document> documentArrayList = new ArrayList<>();
+        for (Document document : documents) {
+            WorkFlow workFlow = DocUtil.doc2Obj(document, WorkFlow.class);
+            Integer progressIndex = workFlow.getProgressIndex();
+            if (progressIndex == null) {
+                continue;
+            }
+            if (workFlow.getPartsKind().get(progressIndex).equals("ExaminePart")) {
+                documentArrayList.add(missionHelper.calculateLack(workFlow.getParts().get(progressIndex)));
+            }
         }
-        ArrayList<Document> documentArrayList = missionManager.changeFormAndCalculate(documents);
-
-        // 判断是否缺人
-        documentArrayList.removeIf(document -> ((Document) document
-                .get("status"))
-                .get("写稿")
-                .equals("未达成"));
+        System.out.println(documentArrayList);
         return documentArrayList;
     }
 
@@ -130,6 +90,11 @@ public class ManagerServiceImpl implements ManagerService {
 
     public ArrayList<String> findAvailableReporters(String missionID, Integer... intervals) {
 
+        /*
+         * TODO
+         *  适配现有数据结构
+         *
+         * */
         ArrayList<String> reportersList = new ArrayList<>();
 
         // 拿任务的时间

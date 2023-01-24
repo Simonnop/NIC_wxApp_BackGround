@@ -39,8 +39,14 @@ public class MissionPart implements WorkPart {
 
     @Override
     public WorkPart initPart(WorkFlow workFlow, JSONObject dataJson) {
+
+        MissionPart missionPart;
         // 注入属性
-        MissionPart missionPart = JSONObject.parseObject(String.valueOf(dataJson), this.getClass());
+        if (dataJson == null) {
+            missionPart = this;
+        } else {
+            missionPart = JSONObject.parseObject(String.valueOf(dataJson), this.getClass());
+        }
         // 设置顺序
         missionPart.setIndex(workFlow.getParts().size());
         // 设置任务号
@@ -66,6 +72,7 @@ public class MissionPart implements WorkPart {
     @Override
     public boolean checkFinish(WorkFlow workFlow) {
         setFinishTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        workFlow.setWorkPart(index, this);
         return true;
     }
 }

@@ -38,8 +38,14 @@ public class EnlistPart implements WorkPart{
 
     @Override
     public WorkPart initPart(WorkFlow workFlow, JSONObject dataJson) {
+
+        EnlistPart enlistPart;
         // 注入属性
-        EnlistPart enlistPart = JSONObject.parseObject(String.valueOf(dataJson), this.getClass());
+        if (dataJson == null) {
+            enlistPart = this;
+        } else {
+            enlistPart = JSONObject.parseObject(String.valueOf(dataJson), this.getClass());
+        }
         // 设置顺序
         enlistPart.setIndex(workFlow.getParts().size());
         // 设置任务号
@@ -65,17 +71,18 @@ public class EnlistPart implements WorkPart{
         if (accordingPartIndex == null) {
             return;
         }
-        Document document = workFlow.getParts().get(accordingPartIndex);
-        WorkPart workPart = DocUtil.doc2Obj(document, WorkPart.class);
+        WorkPart workPart = workFlow.getWorkPart(accordingPartIndex);
 
         if (workPart instanceof MissionPart) {
             MissionPart missionPart = (MissionPart) workPart;
+            System.out.println(missionPart);
             // 继承需要人数
             this.setPeopleNeeds(missionPart.getPeopleNeeds());
             for (String s : getPeopleNeeds().keySet()) {
                 this.getPeopleGet().put(s, new ArrayList<>());
             }
         }
+        workFlow.setWorkPart(index, this);
     }
 
     @Override
@@ -86,6 +93,7 @@ public class EnlistPart implements WorkPart{
             }
         }
         setFinishTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        workFlow.setWorkPart(index, this);
         return true;
     }
 }

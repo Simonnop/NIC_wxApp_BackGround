@@ -40,8 +40,13 @@ public class SubmitPart implements WorkPart {
 
     @Override
     public WorkPart initPart(WorkFlow workFlow, JSONObject dataJson) {
+        SubmitPart submitPart;
         // 注入属性
-        SubmitPart submitPart = JSONObject.parseObject(String.valueOf(dataJson), this.getClass());
+        if (dataJson == null) {
+            submitPart = this;
+        } else {
+            submitPart = JSONObject.parseObject(String.valueOf(dataJson), this.getClass());
+        }
         // 设置顺序
         submitPart.setIndex(workFlow.getParts().size());
         // 设置任务号
@@ -67,8 +72,7 @@ public class SubmitPart implements WorkPart {
         if (accordingPartIndex == null) {
             return;
         }
-        Document document = workFlow.getParts().get(accordingPartIndex);
-        WorkPart workPart = DocUtil.doc2Obj(document, WorkPart.class);
+        WorkPart workPart = workFlow.getWorkPart(accordingPartIndex);
 
         if (workPart instanceof EnlistPart) {
             EnlistPart enlistPart = (EnlistPart) workPart;
@@ -79,6 +83,7 @@ public class SubmitPart implements WorkPart {
                 }
             }});
         }
+        workFlow.setWorkPart(index, this);
     }
 
     @Override
@@ -86,15 +91,18 @@ public class SubmitPart implements WorkPart {
         for (String s : getSubmitFile().keySet()) {
             if (!(getSubmitFile().get(s) == null)) {
                 setFinishTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                workFlow.setWorkPart(index, this);
                 return true;
             }
         }
         for (String s : getSubmitText().keySet()) {
             if (!(getSubmitFile().get(s) == null)) {
                 setFinishTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                workFlow.setWorkPart(index, this);
                 return true;
             }
         }
+        workFlow.setWorkPart(index, this);
         return false;
     }
 }

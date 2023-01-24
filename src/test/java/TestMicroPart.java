@@ -2,6 +2,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import group.dao.WorkDao;
+import group.dao.impl.WorkDaoImpl;
 import group.dao.util.DataBaseUtil;
 import group.pojo.part.EnlistPart;
 import group.pojo.part.MissionPart;
@@ -136,5 +138,19 @@ public class TestMicroPart {
         workFlow.checkProgress();
 
         testField.insertOne(DocUtil.obj2Doc(workFlow));
+    }
+
+    @Test
+    public void testUpdateByMethod() {
+        WorkDaoImpl workDaoImpl = WorkDaoImpl.getWorkDaoImpl();
+
+        Document first = workDaoImpl.searchMissionByInput("missionID", "12347890").first();
+        WorkFlow workFlow = DocUtil.doc2Obj(first, WorkFlow.class);
+
+        EnlistPart enlistPart = DocUtil.doc2Obj(workFlow.getParts().get(1), EnlistPart.class);
+        enlistPart.setDescription("测试捏");
+
+        workDaoImpl.updateInMission("missionID", "12347890",
+                "parts." + "1", DocUtil.obj2Doc(enlistPart));
     }
 }

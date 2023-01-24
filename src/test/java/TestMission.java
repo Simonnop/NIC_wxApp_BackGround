@@ -147,10 +147,11 @@ public class TestMission {
 
         try {
             ManagerService managerService = new ManagerServiceImpl();
+            UserServiceImpl userService = new UserServiceImpl();
 
             JSONArray jsonArray = new JSONArray();
-            jsonArray.addAll(managerService.showMissionGotDraft());
-            //jsonArray.addAll(userService.showNeedMission());
+            //jsonArray.addAll(managerService.showMissionGotDraft());
+            jsonArray.addAll(userService.showNeedMission());
             result.put("data", jsonArray);
 
             result.put("code", 302);

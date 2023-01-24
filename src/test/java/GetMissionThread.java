@@ -21,7 +21,7 @@ public class GetMissionThread extends Thread {
 
         System.out.println(new Date());
 
-        String data = "{\"username\":\"test6\",\"missionID\":\"2022123054\",\"kind\":\"article\"}";
+        String data = "{\"username\":\"U202116999\",\"missionID\":\"20230124699\",\"kind\":\"photo\"}";
         JSONObject result = new JSONObject();
 
         try {
@@ -46,6 +46,7 @@ public class GetMissionThread extends Thread {
             } else {
                 result.put("code", 98);
                 result.put("msg", "后端TakeMissionServlet处理错误");
+                e.printStackTrace();
             }
         } finally {
             String resultStr = result.toJSONString();

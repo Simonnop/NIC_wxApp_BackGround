@@ -5,12 +5,12 @@ import group.dao.ConfigDao;
 import group.dao.LessonDao;
 import group.dao.MissionDao;
 import group.dao.UserDao;
-import group.dao.impl.ConfigDaoImpl;
-import group.dao.impl.LessonDaoImpl;
-import group.dao.impl.MissionDaoImpl;
-import group.dao.impl.UserDaoImpl;
+import group.dao.impl.*;
 import group.exception.AppRuntimeException;
 import group.exception.ExceptionKind;
+import group.pojo.WorkFlow;
+import group.pojo.part.SubmitPart;
+import group.pojo.util.DocUtil;
 import group.service.UserService;
 import group.service.helper.MissionHelper;
 import group.service.util.TimeUtil;
@@ -29,7 +29,9 @@ public class UserServiceImpl implements UserService {
     final MissionDao missionDao = MissionDaoImpl.getMissionDao();
     final ConfigDao configDao = ConfigDaoImpl.getConfigDaoImpl();
     final LessonDao lessonDao = LessonDaoImpl.getLessonDao();
-    final MissionHelper missionManager = MissionHelper.getMissionHelper();
+    final MissionHelper missionHelper = MissionHelper.getMissionHelper();
+    final WorkDaoImpl workDao = WorkDaoImpl.getWorkDaoImpl();
+
 
     /*
     MongoClient mongoClient = DataBaseUtil.getMongoClient();
@@ -52,65 +54,48 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ArrayList<Document> showAllMission() {
-
-        FindIterable<Document> documents = missionDao.showAll();
-        if (documents.first() == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-        return missionManager.changeFormAndCalculate(documents);
+        return null;
     }
 
     @Override
     public ArrayList<Document> showNeedMission() {
 
+        FindIterable<Document> documents = workDao.showAll();
         ArrayList<Document> documentArrayList = new ArrayList<>();
-
-        FindIterable<Document> documents = missionDao.showAll();
-        if (documents.first() == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-        // 判断是否缺人
-        for (Document document : missionManager.changeFormAndCalculate(documents)) {
-            if (((Document) document.get("status"))
-                    .get("接稿")
-                    .equals("未达成")) {
-                documentArrayList.add(document);
+        for (Document document : documents) {
+            WorkFlow workFlow = DocUtil.doc2Obj(document, WorkFlow.class);
+            Integer progressIndex = workFlow.getProgressIndex();
+            if (progressIndex == null) {
+                continue;
+            }
+            if (workFlow.getPartsKind().get(progressIndex).equals("EnlistPart")) {
+                documentArrayList.add(missionHelper.calculateLack(workFlow.getParts().get(progressIndex)));
             }
         }
         return documentArrayList;
-
     }
 
     @Override
     public ArrayList<Document> showMissionById(String missionID) {
-
-        FindIterable<Document> documents = missionDao.searchMissionByInput("missionID", missionID);
-        if (documents.first() == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-        return missionManager.changeFormAndCalculate(documents);
-
+        return null;
     }
 
     @Override
     public ArrayList<Document> showTakenMission(String field, String value) {
 
+        FindIterable<Document> documents = workDao.showAll();
         ArrayList<Document> documentArrayList = new ArrayList<>();
-
-        Document userInfo = userDao.searchUserByInputEqual(field, value).first();
-        if (userInfo == null) {
-            throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
-        }
-        for (String missionID : userInfo.getList("missionTaken", String.class)) {
-            Document document = missionDao.searchMissionByInput("missionID", missionID).first();
-            if (document == null) {
+        for (Document document : documents) {
+            WorkFlow workFlow = DocUtil.doc2Obj(document, WorkFlow.class);
+            Integer progressIndex = workFlow.getProgressIndex();
+            if (progressIndex == null) {
                 continue;
             }
-            if (((Document) document.get("status"))
-                    .get("写稿")
-                    .equals("未达成")) {
-                documentArrayList.add(missionManager.calculateLack(document));
-                System.out.println(missionID);
+            if (workFlow.getPartsKind().get(progressIndex).equals("SubmitPart")) {
+                SubmitPart submitPart = (SubmitPart) workFlow.getCurrentWorkPart();
+                if (submitPart.getAccessiblePeople().contains(value)) {
+                    documentArrayList.add(workFlow.getParts().get(progressIndex));
+                }
             }
         }
         return documentArrayList;
@@ -122,26 +107,29 @@ public class UserServiceImpl implements UserService {
         // 不带事务写法: 不验证 username 响应时间更快
         boolean success = true;
         try {
-            synchronized (missionDao) {
-                Document document = missionDao.searchMissionByInput("missionID", missionID).first();
+            synchronized (workDao) {
+                Document documentWorkFlow = workDao.searchMissionByInput("missionID", missionID).first();
                 // 验证非空
-                if (document == null) {
+                if (documentWorkFlow == null) {
                     throw new AppRuntimeException(ExceptionKind.DATABASE_NOT_FOUND);
                 }
-                missionManager.calculateLack(document);
+                WorkFlow workFlow = DocUtil.doc2Obj(documentWorkFlow, WorkFlow.class);
+                Integer progressIndex = workFlow.getProgressIndex();
+                Document document = missionHelper.calculateLack(workFlow.getParts().get(progressIndex));
                 // 验证非满员
-                if (((Document) document.get("reporterLack"))
+                if (((Document) document.get("peopleLack"))
                         .get(kind)
                         .equals(0)) {
                     throw new AppRuntimeException(ExceptionKind.ENOUGH_PEOPLE);
                 }
                 // 验证未参与
-                if (((ArrayList<?>) ((Document) document.get("reporters"))
+                if (((ArrayList<?>) ((Document) document.get("peopleGet"))
                         .get(kind))
                         .contains(userid)) {
                     throw new AppRuntimeException(ExceptionKind.ALREADY_PARTICIPATE);
                 }
-                missionDao.addToSetInMission("missionID", missionID, "reporters." + kind, userid);
+                workDao.addToSetInMission("missionID", missionID,
+                        "parts." + progressIndex + ".peopleGet." + kind, userid);
             }
         } catch (Exception e) {
             success = false;
@@ -151,7 +139,7 @@ public class UserServiceImpl implements UserService {
                 new Thread(() -> userDao.addToSetInUser(
                         "userid", userid, "missionTaken", missionID))
                         .start();
-                new Thread(() -> missionManager.updateMissionStatus(missionID)).start();
+                new Thread(() -> missionHelper.updateMissionStatus(missionID)).start();
             }
         }
 
@@ -179,7 +167,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void uploadFile(List<FileItem> formItems, String missionID, String userid,String uploadPath) {
+    public void uploadFile(List<FileItem> formItems, String missionID, String userid, String uploadPath) {
+        /*
+         * TODO
+         *  适配现有数据结构
+         *
+         * */
         // 如果目录不存在则创建
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
@@ -213,7 +206,7 @@ public class UserServiceImpl implements UserService {
                         missionDao.updateInMission(
                                 "missionID", missionID,
                                 "statusChanger.写稿",
-                                userDao.searchUserByInputEqual("userid",userid)
+                                userDao.searchUserByInputEqual("userid", userid)
                                         .first()
                                         .get("username"));
                         // 将 missionID 加入 user 的 missionCompleted 下
